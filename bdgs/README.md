@@ -1,1 +1,0 @@
-# BDGS - Gesture recognition tool
