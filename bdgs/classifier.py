@@ -6,17 +6,18 @@ from numpy import ndarray, dtype
 
 from bdgs.algorithms.alg_2.alg_2 import Alg2
 from bdgs.algorithms.murthy_jadon.murthy_jadon import MurthyJadon
+from bdgs.algorithms.adithya_rajesh.adithya_rajesh import AdithyaRajesh
 from bdgs.gesture import GESTURE
 
 
 class ALGORITHM(StrEnum):
     MURTHY_JADON = "MURTHY_JADON"
-    ALG_2 = "ALG_2"
+    ADITHYA_RAJESH = "ADITHYA_RAJESH"
 
 
 ALGORITHM_FUNCTIONS = {
     ALGORITHM.MURTHY_JADON: MurthyJadon(),
-    ALGORITHM.ALG_2: Alg2(),
+    ALGORITHM.ADITHYA_RAJESH: AdithyaRajesh(),
 }
 
 
