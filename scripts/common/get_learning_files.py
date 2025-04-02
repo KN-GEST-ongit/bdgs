@@ -1,6 +1,6 @@
 import os
 
-folder_path = os.path.abspath("../../../bdgs_photos")
+folder_path = os.path.abspath("../../../photos_test")
 
 
 def get_learning_files():
