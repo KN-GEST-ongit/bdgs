@@ -2,12 +2,13 @@ import cv2
 import numpy as np
 
 from bdgs.algorithms.bdgs_algorithm import BaseAlgorithm
+from bdgs.algorithms.murthy_jadon.murthy_jadon_payload import MurthyJadonPayload
 from bdgs.gesture import GESTURE
 
 
 class MurthyJadon(BaseAlgorithm):
-    def process_image(self, image: np.ndarray) -> np.ndarray:
-        gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+    def process_image(self, payload: MurthyJadonPayload) -> np.ndarray:
+        gray = cv2.cvtColor(payload.image, cv2.COLOR_BGR2GRAY)
         blurred = cv2.GaussianBlur(gray, (5, 5), 0)
         _, binary_image = cv2.threshold(blurred, 0, 255, cv2.THRESH_BINARY_INV + cv2.THRESH_OTSU)
 
