@@ -19,6 +19,8 @@ def get_learning_files():
             classify_row = [line.split("\n")[0] for line in f]
         files.pop(0)  # remove classify file
 
+        files = sorted(files)
+
         for index in range(len(files) - 1):
             if files[index].lower().endswith(('.png', '.jpg', '.jpeg')) and classify_row[index].split(" ")[0] != "0":
                 image_files.append((os.path.join(root, files[index]), classify_row[index]))
