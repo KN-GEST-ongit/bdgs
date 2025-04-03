@@ -16,12 +16,13 @@ def get_learning_files():
         if classify_file is None or len(files) == 0: continue
 
         with open(classify_file, "r") as f:
-            classify_table = [line.split(" ")[0] for line in f]
+            classify_row = [line.split("\n")[0] for line in f]
         files.pop(0)  # remove classify file
 
         for index in range(len(files) - 1):
-            if files[index].lower().endswith(('.png', '.jpg', '.jpeg')) and classify_table[index] != "0":
-                image_files.append((os.path.join(root, files[index]), classify_table[index]))
+            if files[index].lower().endswith(('.png', '.jpg', '.jpeg')) and classify_row[index].split(" ")[0] != "0":
+                image_files.append((os.path.join(root, files[index]), classify_row[index]))
 
     random.shuffle(image_files)
+    print(classify_row)
     return image_files
