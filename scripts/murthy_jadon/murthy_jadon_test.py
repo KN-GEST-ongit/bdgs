@@ -44,9 +44,9 @@ def learn():
 
         hand_image = cv2.imread(image_path)
         background_image = cv2.imread(bg_image_path)
-        processed_image = algorithm.process_image(
+        processed_image = (algorithm.process_image(
             payload=MurthyJadonPayload(image=hand_image, bg_image=background_image)
-        )
+        ).flatten()) / 255
 
         processed_images.append(processed_image)
         etiquettes.append(int(image_file[1].split(" ")[0]) - 1)

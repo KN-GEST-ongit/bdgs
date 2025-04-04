@@ -53,14 +53,13 @@ class MurthyJadon(BaseAlgorithm):
         gray = cv2.cvtColor(subtracted, cv2.COLOR_BGR2GRAY)
         hand_only = extract_hand_region(gray)
         resized = cv2.resize(hand_only, (30, 30))
-        result = resized.flatten()
 
-        return result / 255
+        return resized
 
     def classify(self, payload: MurthyJadonPayload) -> GESTURE:
         predicted_class = 1
         model = keras.models.load_model(os.path.join('../../trained_models', 'murthy_jadon.keras'))
-        processed_image = self.process_image(payload=payload)
+        processed_image = (self.process_image(payload=payload).flatten()) / 255
         processed_image = np.expand_dims(processed_image, axis=0)  #
 
         print(processed_image.shape)
