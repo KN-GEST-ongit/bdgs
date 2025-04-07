@@ -11,7 +11,6 @@ class AdithyaRajesh(BaseAlgorithm):
     def process_image(self, payload: ImagePayload,
                       processing_method: PROCESSING_METHOD = PROCESSING_METHOD.DEFAULT) -> np.ndarray:
         image = payload.image
-        image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
         image = cv2.resize(image, (100, 100))
         image = image.astype(np.float32)
         # expand to get shape (1, 100, 100, 3)
