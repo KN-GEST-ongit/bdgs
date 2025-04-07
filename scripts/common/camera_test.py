@@ -3,11 +3,11 @@ from tensorflow.python.data.experimental.ops.testing import sleep
 
 from bdgs import classify
 from bdgs.algorithms.murthy_jadon.murthy_jadon_payload import MurthyJadonPayload
-from bdgs.classifier import ALGORITHM
+from bdgs.data.algorithm import ALGORITHM
 from bdgs.models.image_payload import ImagePayload
 
 
-def camera_test(algorithm: ALGORITHM):
+def camera_test(algorithm: ALGORITHM, show_prediction_tresh=70):
     cap = cv2.VideoCapture(0)
     if not cap.isOpened():
         print("Cannot open camera.")
@@ -34,14 +34,15 @@ def camera_test(algorithm: ALGORITHM):
 
         if algorithm == ALGORITHM.MURTHY_JADON:
             payload = MurthyJadonPayload(image=image, bg_image=background)
-        # other
+        # other algs
         else:
             payload = ImagePayload(image=image)
 
-        prediction = classify(algorithm=algorithm, payload=payload)
+        prediction, certainty = classify(algorithm=algorithm, payload=payload)
 
-        font = cv2.FONT_HERSHEY_COMPLEX
-        cv2.putText(image, str(prediction), (0, 100), font, 1, (255, 255, 255), 2)
+        if certainty >= show_prediction_tresh:
+            font = cv2.FONT_HERSHEY_COMPLEX
+            cv2.putText(image, f"{str(prediction)} ({certainty}%)", (0, 100), font, 1, (255, 255, 255), 2)
         cv2.imshow("Image", image)
 
         if cv2.waitKey(1) & 0xFF == ord('q'):

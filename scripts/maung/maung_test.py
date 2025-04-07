@@ -4,7 +4,7 @@ import cv2
 
 from bdgs import classify
 from bdgs.algorithms.maung.maung import Maung
-from bdgs.classifier import ALGORITHM
+from bdgs.data.algorithm import ALGORITHM
 from bdgs.models.image_payload import ImagePayload
 from scripts.common.crop_image import crop_image
 from scripts.common.get_learning_files import get_learning_files
@@ -34,7 +34,7 @@ def test_process_image():
 
             cv2.destroyAllWindows()
 
-            result = classify(ImagePayload(image), algorithm=ALGORITHM.MAUNG)
+            result = classify(payload=ImagePayload(image), algorithm=ALGORITHM.MAUNG)
             print(f"Result for {img}: {result}")
         else:
             print(f"Failed to load image: {img}")

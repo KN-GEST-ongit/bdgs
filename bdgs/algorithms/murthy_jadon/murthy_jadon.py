@@ -6,7 +6,8 @@ import numpy as np
 
 from bdgs.algorithms.bdgs_algorithm import BaseAlgorithm
 from bdgs.algorithms.murthy_jadon.murthy_jadon_payload import MurthyJadonPayload
-from bdgs.gesture import GESTURE
+from bdgs.data.gesture import GESTURE
+from bdgs.data.processing_method import PROCESSING_METHOD
 from scripts.common.vars import trained_models_path
 
 
@@ -46,29 +47,36 @@ def extract_hand_region(image):
 
 
 class MurthyJadon(BaseAlgorithm):
-    def process_image(self, payload: MurthyJadonPayload) -> np.ndarray:
-        image = payload.image
-        background = payload.bg_image
+    def process_image(self, payload: MurthyJadonPayload,
+                      processing_method: PROCESSING_METHOD = PROCESSING_METHOD.DEFAULT) -> np.ndarray:
+        if processing_method == PROCESSING_METHOD.DEFAULT or processing_method == PROCESSING_METHOD.MURTHY_JADON_PROC:
+            image = payload.image
+            background = payload.bg_image
 
-        subtracted = subtract_background(background, image)
-        gray = cv2.cvtColor(subtracted, cv2.COLOR_BGR2GRAY)
-        hand_only = extract_hand_region(gray)
-        try:
-            resized = cv2.resize(hand_only, (30, 30))
-        except:
-            return cv2.resize(gray, (30, 30))
+            subtracted = subtract_background(background, image)
+            gray = cv2.cvtColor(subtracted, cv2.COLOR_BGR2GRAY)
+            hand_only = extract_hand_region(gray)
+            try:
+                resized = cv2.resize(hand_only, (30, 30))
+            except:
+                return cv2.resize(gray, (30, 30))
 
-        return resized
+            return resized
+        else:
+            raise Exception("Invalid processing method")
 
-    def classify(self, payload: MurthyJadonPayload) -> GESTURE:
+    def classify(self, payload: MurthyJadonPayload,
+                 processing_method: PROCESSING_METHOD = PROCESSING_METHOD.DEFAULT) -> (GESTURE, int):
         predicted_class = 1
+        certainty = 0
         model = keras.models.load_model(os.path.join(trained_models_path, 'murthy_jadon.keras'))
-        processed_image = (self.process_image(payload=payload).flatten()) / 255
+        processed_image = (self.process_image(payload=payload, processing_method=processing_method).flatten()) / 255
         processed_image = np.expand_dims(processed_image, axis=0)  #
 
         predictions = model.predict(processed_image)
 
         for i, prediction in enumerate(predictions):
             predicted_class = np.argmax(prediction) + 1
+            certainty = int(np.max(prediction) * 100)
 
-        return GESTURE(predicted_class)
+        return GESTURE(predicted_class), certainty

@@ -2,12 +2,14 @@ import cv2
 import numpy as np
 
 from bdgs.algorithms.bdgs_algorithm import BaseAlgorithm
-from bdgs.gesture import GESTURE
+from bdgs.data.gesture import GESTURE
+from bdgs.data.processing_method import PROCESSING_METHOD
 from bdgs.models.image_payload import ImagePayload
 
 
 class Maung(BaseAlgorithm):
-    def process_image(self, payload: ImagePayload) -> np.ndarray:
+    def process_image(self, payload: ImagePayload,
+                      processing_method: PROCESSING_METHOD = PROCESSING_METHOD.DEFAULT) -> np.ndarray:
         gray = cv2.cvtColor(payload.image, cv2.COLOR_BGR2GRAY)
 
         blurred = cv2.medianBlur(gray, 15)
@@ -29,5 +31,5 @@ class Maung(BaseAlgorithm):
 
         return gradient_orientation_degrees
 
-    def classify(self, image) -> GESTURE:
-        return GESTURE.OK
+    def classify(self, image, processing_method: PROCESSING_METHOD = PROCESSING_METHOD.DEFAULT) -> (GESTURE, int):
+        return GESTURE.TEN, 100

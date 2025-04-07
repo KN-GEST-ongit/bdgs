@@ -6,13 +6,14 @@ import numpy as np
 from sklearn.model_selection import train_test_split
 
 from bdgs.algorithms.murthy_jadon.murthy_jadon_payload import MurthyJadonPayload
-from bdgs.classifier import ALGORITHM, process_image
+from bdgs.classifier import process_image
+from bdgs.data.algorithm import ALGORITHM
 from scripts.common.get_learning_files import get_learning_files
 from scripts.common.vars import training_images_path, trained_models_path
 
 
 def learn():
-    train_images_amount = 5000
+    train_images_amount = 100
     epochs = 40
 
     images = get_learning_files(limit=train_images_amount, shuffle=True)

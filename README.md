@@ -22,7 +22,7 @@ To create a new algorithm, follow these steps:
 
    ```python
    from bdgs.algorithms.bdgs_algorithm import BaseAlgorithm
-   from bdgs.gesture import GESTURE
+   from bdgs.data.gesture import GESTURE
 
 
    class Alg2(BaseAlgorithm):
