@@ -4,18 +4,18 @@ import cv2
 
 from bdgs import classify
 from bdgs.algorithms.maung.maung import Maung
-from bdgs.classifier import ALGORITHM
+from bdgs.data.algorithm import ALGORITHM
 from bdgs.models.image_payload import ImagePayload
 from scripts.common.crop_image import crop_image
 from scripts.common.get_learning_files import get_learning_files
-from scripts.common.vars import training_images_path
+from scripts.common.vars import TRAINING_IMAGES_PATH
 
 
 def test_process_image():
     images = get_learning_files()
 
     for img, coords, bg in images:
-        image_path = str(os.path.join(training_images_path, img))
+        image_path = str(os.path.join(TRAINING_IMAGES_PATH, img))
         print(image_path)
         image = cv2.imread(image_path)
 
@@ -34,7 +34,7 @@ def test_process_image():
 
             cv2.destroyAllWindows()
 
-            result = classify(ImagePayload(image), algorithm=ALGORITHM.MAUNG)
+            result = classify(payload=ImagePayload(image), algorithm=ALGORITHM.MAUNG)
             print(f"Result for {img}: {result}")
         else:
             print(f"Failed to load image: {img}")

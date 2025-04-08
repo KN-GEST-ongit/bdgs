@@ -1,36 +1,23 @@
-from enum import StrEnum
-
 from numpy import ndarray
 
-from bdgs.algorithms.adithya_rajesh.adithya_rajesh import AdithyaRajesh
-from bdgs.algorithms.maung.maung import Maung
-from bdgs.algorithms.murthy_jadon.murthy_jadon import MurthyJadon
-from bdgs.gesture import GESTURE
+from bdgs.data.algorithm import ALGORITHM
+from bdgs.data.algorithm_functions import ALGORITHM_FUNCTIONS
+from bdgs.data.gesture import GESTURE
+from bdgs.data.processing_method import PROCESSING_METHOD
 from bdgs.models.image_payload import ImagePayload
 
 
-class ALGORITHM(StrEnum):
-    MURTHY_JADON = "MURTHY_JADON"
-    MAUNG = "MAUNG"
-    ADITHYA_RAJESH = "ADITHYA_RAJESH"
-
-
-ALGORITHM_FUNCTIONS = {
-    ALGORITHM.MURTHY_JADON: MurthyJadon(),
-    ALGORITHM.MAUNG: Maung(),
-    ALGORITHM.ADITHYA_RAJESH: AdithyaRajesh(),
-}
-
-
-def process_image(payload: ImagePayload, algorithm: ALGORITHM) -> ndarray:
+def process_image(algorithm: ALGORITHM, payload: ImagePayload,
+                  processing_method: PROCESSING_METHOD = PROCESSING_METHOD.DEFAULT) -> ndarray:
     classifier = ALGORITHM_FUNCTIONS[algorithm]
-    processed = classifier.process_image(payload)
+    processed = classifier.process_image(payload, processing_method)
 
     return processed
 
 
-def classify(payload: ImagePayload, algorithm: ALGORITHM) -> GESTURE:
+def classify(algorithm: ALGORITHM, payload: ImagePayload,
+             processing_method: PROCESSING_METHOD = PROCESSING_METHOD.DEFAULT) -> (GESTURE, int):
     classifier = ALGORITHM_FUNCTIONS[algorithm]
-    prediction = classifier.classify(payload)
+    prediction, certainty = classifier.classify(payload, processing_method)
 
-    return prediction
+    return prediction, certainty

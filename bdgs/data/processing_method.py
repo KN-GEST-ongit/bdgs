@@ -1,0 +1,6 @@
+from enum import StrEnum
+
+
+class PROCESSING_METHOD(StrEnum):
+    DEFAULT = "DEFAULT"
+    MURTHY_JADON_PROC = "MURTHY_JADON_PROC"

@@ -1,0 +1,7 @@
+from enum import StrEnum
+
+
+class ALGORITHM(StrEnum):
+    MURTHY_JADON = "MURTHY_JADON"
+    MAUNG = "MAUNG"
+    ADITHYA_RAJESH = "ADITHYA_RAJESH"
