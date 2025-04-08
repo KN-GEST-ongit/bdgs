@@ -2,8 +2,8 @@ import os
 
 import cv2
 import numpy as np
-from sklearn.model_selection import KFold
-from tensorflow.keras.models import Sequential, save_model
+from sklearn.model_selection import KFold, train_test_split
+from tensorflow.keras.models import Sequential, save_model, load_model
 from tensorflow.keras.layers import Rescaling, Conv2D, MaxPooling2D, Flatten, Dense
 from tensorflow.keras.optimizers import SGD
 from tensorflow.keras.losses import SparseCategoricalCrossentropy
@@ -46,7 +46,6 @@ def get_training_data():
 
 
     return processed_images, labels
-
 
 def k_fold_train():
     images, labels = get_training_data()
@@ -104,6 +103,51 @@ def k_fold_train():
         fold_no = fold_no + 1
 
 
+def train():
+    """Uses all available data to train."""
+    images, labels = get_training_data()
+    num_classes = len(GESTURE)
+
+    model = Sequential()
+    model.add(Rescaling(1.0 / 255))
+
+    #1st layer
+    model.add(Conv2D(filters=8, kernel_size=(19, 19), padding="same", activation="relu"))
+    model.add(MaxPooling2D(pool_size=(2, 2), strides=(3, 3)))
+    #2nd layer
+    model.add(Conv2D(filters=16, kernel_size=(17, 17), padding="same", activation="relu"))
+    model.add(MaxPooling2D(pool_size=(2, 2), strides=(3, 3)))
+    #3rd layer
+    model.add(Conv2D(filters=32, kernel_size=(15, 15), padding="same", activation="relu"))
+    model.add(MaxPooling2D(pool_size=(2, 2), strides=(3, 3)))
+
+
+    model.add(Flatten())
+    model.add(Dense(num_classes, activation="softmax"))
+
+
+    model.compile(
+    optimizer=SGD(learning_rate=0.01, momentum=0.9),
+    loss=SparseCategoricalCrossentropy(from_logits=False),
+    metrics=["accuracy"],
+    )
+
+
+    x_train, x_val, y_train, y_val = train_test_split(images, labels, test_size=0.2,
+                                                      random_state=42)
+
+    # reduced the epochs from 20 to 3 to reduce overfitting for now.
+    history = model.fit(x_train, y_train,
+                validation_data=(x_val, y_val),
+                batch_size=32,
+                epochs=3,
+                verbose="auto")
+
+    save_model(
+        model=model,
+        filepath=os.path.join(TRAINED_MODELS_PATH, "adithya_rajesh.keras")
+    )
+
 def test_process_image():
     image_files = get_learning_files()
 
@@ -130,7 +174,7 @@ def test_process_image():
             print(f"Failed to load image: {image_file}")
 
 
-def test_evaluate():
+def classify_test():
     image_files = get_learning_files()
 
     for image_file in image_files:
@@ -152,6 +196,14 @@ def test_evaluate():
         else:
             print(f"Failed to load image: {image_file}")
 
+def evaluate():
+    images, labels = get_training_data()
+    model = load_model(os.path.join(TRAINED_MODELS_PATH, "adithya_rajesh.keras"))
+    model.evaluate(images, labels, batch_size=32)
+
+
+#k_fold_train()
 #train()
-test_evaluate()
+#classify_test()
 #test_process_image()
+evaluate()
