@@ -100,7 +100,6 @@ def k_fold_train():
 
 
 def train():
-    """Uses all available data to train."""
     images, labels = get_training_data()
     num_classes = len(GESTURE)
 
