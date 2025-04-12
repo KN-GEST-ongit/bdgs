@@ -13,7 +13,8 @@ from scripts.common.vars import TRAINING_IMAGES_PATH
 
 
 def process_image_test():
-    images = get_learning_files()
+    images = get_learning_files(shuffle=False, limit_recordings_of_single_person_single_gesture=2,
+                                limit_images_in_single_person_single_recording=1)
 
     for image_file in images:
         image_path = str(os.path.join(TRAINING_IMAGES_PATH, image_file[0]))
@@ -55,6 +56,6 @@ def cam_test():
 
 
 if __name__ == "__main__":
-    # process_image_test()
+    process_image_test()
     # classify_test()
-    cam_test()
+    # cam_test()
