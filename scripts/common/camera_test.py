@@ -3,6 +3,7 @@ from tensorflow.python.data.experimental.ops.testing import sleep
 
 from bdgs import classify
 from bdgs.algorithms.murthy_jadon.murthy_jadon_payload import MurthyJadonPayload
+from bdgs.classifier import process_image
 from bdgs.data.algorithm import ALGORITHM
 from bdgs.models.image_payload import ImagePayload
 
@@ -38,15 +39,41 @@ def camera_test(algorithm: ALGORITHM, show_prediction_tresh=70):
         else:
             payload = ImagePayload(image=image)
 
+        processed = process_image(algorithm=algorithm, payload=payload)
         prediction, certainty = classify(algorithm=algorithm, payload=payload)
 
         if certainty >= show_prediction_tresh:
-            font = cv2.FONT_HERSHEY_COMPLEX
-            cv2.putText(image, f"{str(prediction)} ({certainty}%)", (0, 100), font, 1, (255, 255, 255), 2)
-        cv2.imshow("Image", image)
+            show_prediction_text(certainty, image, prediction)
+        show_processed(image, processed)
+        cv2.imshow("Classifier", image)
 
         if cv2.waitKey(1) & 0xFF == ord('q'):
             break
 
     cap.release()
     cv2.destroyAllWindows()
+
+
+def show_processed(image, processed):
+    if len(processed.shape) == 2:
+        processed = cv2.cvtColor(processed, cv2.COLOR_GRAY2BGR)
+    processed = processed.squeeze()
+    if processed.shape[0] == 0 or processed.shape[1] == 0:
+        print("Processed image has zero dimensions. Skipping thumbnail generation.")
+    else:
+        thumbnail_height = 150
+        thumbnail_width = int(processed.shape[1] * (thumbnail_height / processed.shape[0]))
+        thumbnail = cv2.resize(processed, (thumbnail_width, thumbnail_height))
+        image[0:thumbnail.shape[0], 0:thumbnail.shape[1]] = thumbnail
+
+
+def show_prediction_text(certainty, image, prediction):
+    font = cv2.FONT_HERSHEY_SIMPLEX
+    text = f"{str(prediction)} ({certainty}%)"
+    font_scale = 0.8
+    thickness = 2
+    color = (255, 255, 255)
+    (text_width, text_height), _ = cv2.getTextSize(text, font, font_scale, thickness)
+    x = image.shape[1] - text_width - 10
+    y = image.shape[0] - 10
+    cv2.putText(image, text, (x, y), font, font_scale, color, thickness)

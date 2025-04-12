@@ -28,8 +28,10 @@ def test_process_image():
             alg = Maung()
             alg_payload = ImagePayload(image)
             processed_image = alg.process_image(alg_payload)
-
             cv2.imshow("After", processed_image)
+
+            # processed_image = alg.process_image(alg_payload, processing_method=PROCESSING_METHOD.ADITHYA_RAJESH)
+            # cv2.imshow("After", processed_image[0])
             cv2.waitKey(0)
 
             cv2.destroyAllWindows()
