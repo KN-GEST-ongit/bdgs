@@ -42,17 +42,19 @@ def test_process_image():
             print(f"Failed to load image: {img}")
 
 
-# def test_classify():
-#     for image_file in image_files:
-#         image_path = os.path.join(folder_path, image_file)
-#         image = cv2.imread(image_path)
-#
-#         if image is not None:
-#             result = recognize(image, algorithm=ALGORITHM.MURTHY_JADON)
-#             print(f"Result for {image_file}: {result}")
-#         else:
-#             print(f"Failed to load image: {image_file}")
+def classify_test():
+    images = get_learning_files(limit=100, shuffle=True, offset=20)
+
+    for image, hand_recognition_data, _ in images:
+        image_path = str(os.path.join(TRAINING_IMAGES_PATH, image))
+        hand_image = crop_image(cv2.imread(image_path), hand_recognition_data)
+        result, certainty = classify(algorithm=ALGORITHM.MAUNG,
+                                     payload=ImagePayload(image=hand_image))
+
+        cv2.imshow(f"Gesture: {result} ({certainty}%)", hand_image)
+        cv2.waitKey(0)
+        cv2.destroyAllWindows()
 
 
-test_process_image()
-# test_classify()
+# test_process_image()
+classify_test()

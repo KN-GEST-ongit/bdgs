@@ -1,10 +1,13 @@
 import cv2
 import numpy as np
+import keras
+import os
 
 from bdgs.algorithms.bdgs_algorithm import BaseAlgorithm
 from bdgs.data.gesture import GESTURE
 from bdgs.data.processing_method import PROCESSING_METHOD
 from bdgs.models.image_payload import ImagePayload
+from scripts.common.vars import TRAINED_MODELS_PATH
 
 
 class Maung(BaseAlgorithm):
@@ -34,7 +37,21 @@ class Maung(BaseAlgorithm):
 
         hist, _ = np.histogram(gradient_orientation_degrees, bins=3, range=(0, 90))
 
-        return gradient_orientation_degrees
+        # return gradient_orientation_degrees
+        return hist.astype(np.float32)
 
-    def classify(self, image, processing_method: PROCESSING_METHOD = PROCESSING_METHOD.DEFAULT) -> (GESTURE, int):
-        return GESTURE.TEN, 100
+    def classify(self, payload: ImagePayload,
+                 processing_method: PROCESSING_METHOD = PROCESSING_METHOD.DEFAULT) -> (GESTURE, int):
+        predicted_class = 1
+        certainty = 0
+        model = keras.models.load_model(os.path.join(TRAINED_MODELS_PATH, 'maung.keras'))
+        processed_image = self.process_image(payload=payload, processing_method=processing_method)
+        processed_image = np.expand_dims(processed_image, axis=0)  #
+
+        predictions = model.predict(processed_image)
+
+        for i, prediction in enumerate(predictions):
+            predicted_class = np.argmax(prediction) + 1
+            certainty = int(np.max(prediction) * 100)
+
+        return GESTURE(predicted_class), certainty
