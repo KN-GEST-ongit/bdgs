@@ -56,5 +56,5 @@ def classify_test():
         cv2.destroyAllWindows()
 
 
-# test_process_image()
-classify_test()
+test_process_image()
+# classify_test()

@@ -2,6 +2,7 @@ import cv2
 import numpy as np
 import keras
 import os
+import pickle
 
 from bdgs.algorithms.bdgs_algorithm import BaseAlgorithm
 from bdgs.data.gesture import GESTURE
@@ -37,21 +38,16 @@ class Maung(BaseAlgorithm):
 
         hist, _ = np.histogram(gradient_orientation_degrees, bins=3, range=(0, 90))
 
-        # return gradient_orientation_degrees
-        return hist.astype(np.float32)
+        return gradient_orientation_degrees
+        # return hist.astype(np.float32)
 
     def classify(self, payload: ImagePayload,
                  processing_method: PROCESSING_METHOD = PROCESSING_METHOD.DEFAULT) -> (GESTURE, int):
         predicted_class = 1
         certainty = 0
-        model = keras.models.load_model(os.path.join(TRAINED_MODELS_PATH, 'maung.keras'))
-        processed_image = self.process_image(payload=payload, processing_method=processing_method)
+        with open(os.path.join(TRAINED_MODELS_PATH, 'maung.pkl'), 'rb') as f:
+            model = pickle.load(f)
+        processed_image = (self.process_image(payload=payload, processing_method=processing_method)).flatten()
         processed_image = np.expand_dims(processed_image, axis=0)  #
-
         predictions = model.predict(processed_image)
-
-        for i, prediction in enumerate(predictions):
-            predicted_class = np.argmax(prediction) + 1
-            certainty = int(np.max(prediction) * 100)
-
-        return GESTURE(predicted_class), certainty
+        return GESTURE(predictions[0]+1), 100
