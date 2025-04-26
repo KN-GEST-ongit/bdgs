@@ -2,10 +2,10 @@ import os
 
 import cv2
 
+from bdgs.algorithms.pinto_borges.pinto_borges_payload import PintoBorgesPayload
 from bdgs.classifier import process_image
 from bdgs.data.algorithm import ALGORITHM
 from bdgs.data.processing_method import PROCESSING_METHOD
-from bdgs.models.image_payload import ImagePayload
 from scripts.common.get_learning_files import get_learning_files
 from scripts.common.vars import TRAINING_IMAGES_PATH
 
@@ -20,7 +20,7 @@ def process_image_test():
         hand_image = cv2.imread(image_path)
         processed_image = process_image(
             algorithm=ALGORITHM.PINTO_BORGES,
-            payload=ImagePayload(image=hand_image),
+            payload=PintoBorgesPayload(image=hand_image, coords=image_file[1]),
             processing_method=PROCESSING_METHOD.DEFAULT
         )
 
