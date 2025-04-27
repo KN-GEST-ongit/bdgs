@@ -35,7 +35,7 @@ def learn():
 
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
 
-    pca = PCA(n_components=50)
+    pca = PCA(n_components=50)  # PCA can be replaced by LDA
     X_train_pca = pca.fit_transform(X_train)
     X_test_pca = pca.transform(X_test)
 
@@ -49,6 +49,15 @@ def learn():
     svm_accuracy = svm.score(X_test_pca, y_test)
     print(f"SVM Accuracy: {svm_accuracy * 100:.2f}%")
 
+    model_path = os.path.join(TRAINED_MODELS_PATH, 'mohmmad_dadi_pca.pkl')
+    with open(model_path, 'wb') as f:
+        pickle.dump(pca, f)
+    model_path = os.path.join(TRAINED_MODELS_PATH, 'mohmmad_dadi_knn.pkl')
+    with open(model_path, 'wb') as f:
+        pickle.dump(knn, f)
+    model_path = os.path.join(TRAINED_MODELS_PATH, 'mohmmad_dadi_svm.pkl')
+    with open(model_path, 'wb') as f:
+        pickle.dump(svm, f)
 
 if __name__ == "__main__":
     learn()

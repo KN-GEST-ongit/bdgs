@@ -1,10 +1,14 @@
+import os
 import cv2
 import numpy as np
+import pickle
 
 from bdgs.algorithms.bdgs_algorithm import BaseAlgorithm
 from bdgs.data.processing_method import PROCESSING_METHOD
 from bdgs.models.image_payload import ImagePayload
 from bdgs.data.gesture import GESTURE
+from scripts.common.vars import TRAINED_MODELS_PATH
+from sklearn.decomposition import PCA
 
 
 class MohmmadDadi(BaseAlgorithm):
@@ -26,4 +30,15 @@ class MohmmadDadi(BaseAlgorithm):
 
     def classify(self, payload: ImagePayload,
                  processing_method: PROCESSING_METHOD = PROCESSING_METHOD.DEFAULT) -> (GESTURE, int):
-        pass
+        with open(os.path.join(TRAINED_MODELS_PATH, 'mohmmad_dadi_svm.pkl'), 'rb') as f:
+            model = pickle.load(f)
+
+        with open(os.path.join(TRAINED_MODELS_PATH, 'mohmmad_dadi_pca.pkl'), 'rb') as f:
+            pca = pickle.load(f)
+
+        processed_image = self.process_image(payload=payload, processing_method=processing_method).flatten()
+        processed_image_pca = pca.transform([processed_image])
+
+        predictions = model.predict(processed_image_pca)
+        return GESTURE(predictions[0] + 1), 100
+
