@@ -13,7 +13,7 @@ from scripts.common.vars import TRAINING_IMAGES_PATH, TRAINED_MODELS_PATH
 
 
 def learn():
-    train_images_amount = 5000
+    train_images_amount = 1000
     epochs = 80
 
     images = get_learning_files(limit=train_images_amount, shuffle=True)
