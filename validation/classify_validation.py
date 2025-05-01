@@ -11,7 +11,7 @@ from scripts.file_coords_parser import parse_file_coords, parse_etiquette
 from scripts.get_learning_files import get_learning_files
 
 
-def classify_test(algorithms: set[ALGORITHM], images_amount: int, repeat_amount: int, people_amount: int):
+def classify_validation(algorithms: set[ALGORITHM], images_amount: int, repeat_amount: int, people_amount: int):
     files = get_learning_files(shuffle=True, limit=images_amount, limit_images_in_single_person_single_recording=1,
                                limit_people=people_amount, base_path=os.path.abspath("../../bdgs_photos"))
 
@@ -59,4 +59,4 @@ def classify_test(algorithms: set[ALGORITHM], images_amount: int, repeat_amount:
 
 
 if __name__ == "__main__":
-    classify_test(algorithms=set(ALGORITHM), images_amount=10, repeat_amount=2, people_amount=5)
+    classify_validation(algorithms=set(ALGORITHM), images_amount=10, repeat_amount=2, people_amount=5)

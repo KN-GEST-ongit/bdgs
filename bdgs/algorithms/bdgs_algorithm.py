@@ -22,7 +22,7 @@ class BaseAlgorithm(ABC):
         """Classify gesture based on static image"""
         raise NotImplementedError("Method classify not implemented")
 
-    # @abstractmethod
+    @abstractmethod
     def learn(self, learning_data: list[LearningData], target_model_path: str) -> (float, float):
         """Learn from static images"""
         raise NotImplementedError("Method learn not implemented")
