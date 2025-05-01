@@ -3,11 +3,14 @@ import os
 import cv2
 import keras
 import numpy as np
+from keras.api import models, layers
+from sklearn.model_selection import train_test_split
 
 from bdgs.algorithms.bdgs_algorithm import BaseAlgorithm
 from bdgs.data.gesture import GESTURE
 from bdgs.data.processing_method import PROCESSING_METHOD
 from bdgs.models.image_payload import ImagePayload
+from bdgs.models.learning_data import LearningData
 from definitions import ROOT_DIR
 
 
@@ -47,3 +50,40 @@ class EidSchwenker(BaseAlgorithm):
             certainty = int(np.max(prediction) * 100)
 
         return GESTURE(predicted_class), certainty
+
+    def learn(self, learning_data: list[LearningData], target_model_path: str) -> (float, float):
+        epochs = 100
+        processed_images = []
+        etiquettes = []
+
+        for data in learning_data:
+            hand_image = cv2.imread(data.image_path)
+            processed_image = self.process_image(
+                payload=ImagePayload(image=hand_image)
+            )
+
+            processed_images.append(processed_image)
+            etiquettes.append(data.label.value - 1)
+
+        X = np.array(processed_images).reshape(-1, 30, 30, 1)
+        y = np.array(etiquettes)
+
+        X_train, X_val, y_train, y_val = train_test_split(X, y, test_size=0.2, random_state=42)
+
+        model = models.Sequential([
+            layers.Conv2D(15, (6, 6), activation='relu', input_shape=(30, 30, 1)),
+            layers.MaxPooling2D((2, 2)),
+            layers.Conv2D(30, (3, 3), activation='relu'),
+            layers.MaxPooling2D((2, 2)),
+            layers.Flatten(),
+            layers.Dropout(0.5),
+            layers.Dense(64, activation='relu'),
+            layers.Dense(10, activation='softmax')
+        ])
+
+        model.compile(optimizer='adam', loss='sparse_categorical_crossentropy', metrics=['accuracy'])
+        model.fit(X_train, y_train, epochs=epochs, validation_data=(X_val, y_val), verbose=0, batch_size=8)
+        keras.models.save_model(model, os.path.join(target_model_path, 'eid_schwenker.keras'))
+        test_loss, test_acc = model.evaluate(X_val, y_val, verbose=0)
+
+        return test_acc, test_loss
