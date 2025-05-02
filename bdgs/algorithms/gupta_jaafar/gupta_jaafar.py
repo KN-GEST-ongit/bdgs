@@ -54,11 +54,16 @@ class GuptaJaafar(BaseAlgorithm):
     def classify(self, payload: GuptaJaafarPayload,
                  processing_method: PROCESSING_METHOD = PROCESSING_METHOD.DEFAULT) -> (GESTURE, int):
 
-        with open(os.path.join(ROOT_DIR, "trained_models", 'gupta_jaafar.pkl'), 'rb') as f:
+        with open(os.path.join(ROOT_DIR, "trained_models", 'gupta_jaafar_pca.pkl'), 'rb') as f:
+            pca = pickle.load(f)
+        with open(os.path.join(ROOT_DIR, "trained_models", 'gupta_jaafar_lda.pkl'), 'rb') as f:
+            lda = pickle.load(f)
+        with open(os.path.join(ROOT_DIR, "trained_models", 'gupta_jaafar_svm.pkl'), 'rb') as f:
             model = pickle.load(f)
-
         self.process_image(payload=payload, processing_method=processing_method)
-        predictions = model.predict(self.feature_vector)
+        pca_data = pca.transform([self.feature_vector])
+        lda_data = lda.transform(pca_data)
+        predictions = model.predict(lda_data)
         return GESTURE(predictions[0] + 1), 100
 
     def learn(self, learning_data: list[GuptaJaafarLearningData], target_model_path: str) -> (float, float):
@@ -73,18 +78,23 @@ class GuptaJaafar(BaseAlgorithm):
         y = np.array(etiquettes)
         X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
         pca = PCA(n_components=50)
+        pca_data_train = pca.fit_transform(X_train)
+        pca_data_test = pca.transform(X_test)
         lda = LDA(n_components=5)
+        lda_data_train = lda.fit_transform(pca_data_train, y_train)
+        lda_data_test = lda.transform(pca_data_test)
         svm = SVC(kernel='rbf', decision_function_shape='ovo')
-        model = Pipeline([
-            ('pca', pca),
-            ('lda', lda),
-            ('svm', svm)
-        ])
-        model.fit(X_train, y_train)
-        train_accuracy = accuracy_score(y_train, model.predict(X_train))
-        test_accuracy = accuracy_score(y_test, model.predict(X_test))
+        svm.fit(lda_data_train, y_train)
+        train_accuracy = svm.score(lda_data_train, y_train)
+        test_accuracy = svm.score(lda_data_test, y_test)
         model_path = os.path.join(target_model_path, 'gupta_jaafar_pca.pkl')
         with open(model_path, 'wb') as f:
-            pickle.dump(model, f)
+            pickle.dump(pca, f)
+        model_path = os.path.join(target_model_path, 'gupta_jaafar_lda.pkl')
+        with open(model_path, 'wb') as f:
+            pickle.dump(lda, f)
+        model_path = os.path.join(target_model_path, 'gupta_jaafar_svm.pkl')
+        with open(model_path, 'wb') as f:
+            pickle.dump(svm, f)
 
         return train_accuracy * 100, test_accuracy * 100
