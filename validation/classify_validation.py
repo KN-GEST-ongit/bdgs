@@ -49,7 +49,7 @@ def classify_validation(algorithms: set[ALGORITHM], images_amount: int, repeat_a
 
         alg_results = {
             "algorithm": algorithm.value,
-            "corrent_percent": (alg_correct_amount / (images_amount * repeat_amount)) * 100,
+            "correct_percent": (alg_correct_amount / images_amount) * 100,
             "average_certainty": sum(certainties) / len(certainties)
         }
         test_data["algorithms"][algorithm.value] = alg_results
