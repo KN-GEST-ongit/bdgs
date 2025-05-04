@@ -44,11 +44,13 @@ class Maung(BaseAlgorithm):
         return np.float32(gradient_orientation_degrees)  # default without float32 conversion (only for cam_test)
         # return hist.astype(np.float32)
 
-    def classify(self, payload: ImagePayload,
+    def classify(self, payload: ImagePayload, custom_model_path=None,
                  processing_method: PROCESSING_METHOD = PROCESSING_METHOD.DEFAULT) -> (GESTURE, int):
         predicted_class = 1
         certainty = 0
-        with open(os.path.join(ROOT_DIR, "trained_models", 'maung.pkl'), 'rb') as f:
+        model_path = custom_model_path if custom_model_path is not None else os.path.join(ROOT_DIR, "trained_models",
+                                                                                          'maung.pkl')
+        with open(model_path, 'rb') as f:
             model = pickle.load(f)
         processed_image = (self.process_image(payload=payload, processing_method=processing_method)).flatten()
         processed_image = np.expand_dims(processed_image, axis=0)  #

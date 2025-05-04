@@ -42,7 +42,7 @@ def classification_visual_test(algorithm: ALGORITHM, images_amount: int):
         coords = parse_file_coords(image_file[1])
         payload = choose_payload(algorithm, background, coords, image)
 
-        result, certainty = classify(algorithm=algorithm, payload=payload)
+        result, certainty = classify(algorithm=algorithm, payload=payload, custom_model_path="./murthy_jadon2.keras")
 
         cv2.imshow(f"Gesture: {result} ({certainty}%)", image)
         cv2.waitKey(0)
@@ -50,5 +50,5 @@ def classification_visual_test(algorithm: ALGORITHM, images_amount: int):
 
 
 if __name__ == "__main__":
-    image_processing_visual_test(ALGORITHM.MAUNG, 2)
-    classification_visual_test(ALGORITHM.MAUNG, 2)
+    # image_processing_visual_test(ALGORITHM.MAUNG, 2)
+    classification_visual_test(ALGORITHM.MURTHY_JADON, 2)

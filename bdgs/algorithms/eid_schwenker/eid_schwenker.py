@@ -35,11 +35,13 @@ class EidSchwenker(BaseAlgorithm):
         else:
             raise Exception("Invalid processing method")
 
-    def classify(self, payload: ImagePayload,
+    def classify(self, payload: ImagePayload, custom_model_path=None,
                  processing_method: PROCESSING_METHOD = PROCESSING_METHOD.DEFAULT) -> (GESTURE, int):
         predicted_class = 1
         certainty = 0
-        model = keras.models.load_model(os.path.join(ROOT_DIR, "trained_models", 'eid_schwenker.keras'))
+        model_path = custom_model_path if custom_model_path is not None else os.path.join(ROOT_DIR, "trained_models",
+                                                                                          'eid_schwenker.keras')
+        model = keras.models.load_model(model_path)
         processed_image = self.process_image(payload=payload, processing_method=processing_method)
         processed_image = np.expand_dims(processed_image, axis=0)  #
 
