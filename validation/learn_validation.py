@@ -8,9 +8,15 @@ from scripts.choose_learning_data import choose_learning_data
 from scripts.get_learning_files import get_learning_files
 
 
-def learn_validation(algorithms: set[ALGORITHM], images_amount: int, people_amount: int):
-    files = get_learning_files(shuffle=True, limit=images_amount, limit_images_in_single_person_single_recording=1,
+def learn_validation(algorithms: set[ALGORITHM], people_amount: int, images_amount: int = None,
+                     limit_images_in_single_person_single_recording=None,
+                     limit_recordings_of_single_person_single_gesture=None):
+    files = get_learning_files(shuffle=True, limit=images_amount,
+                               limit_images_in_single_person_single_recording=limit_images_in_single_person_single_recording,
+                               limit_recordings_of_single_person_single_gesture=limit_recordings_of_single_person_single_gesture,
                                limit_people=people_amount, base_path=os.path.abspath("../../bdgs_photos"))
+
+    print(f"{len(files)} choosen for learning")
 
     test_data = {
         "type": "learn_test",
@@ -32,9 +38,11 @@ def learn_validation(algorithms: set[ALGORITHM], images_amount: int, people_amou
         }
         test_data["algorithms"][algorithm.value] = alg_results
 
+        print(f"Learned {algorithm.value}: {acc}")
+
     with open('results/validation_learn_results.json', 'w') as outfile:
         json.dump(test_data, outfile, indent=2)
 
 
 if __name__ == "__main__":
-    learn_validation(algorithms=set(ALGORITHM), images_amount=1000, people_amount=5)
+    learn_validation(algorithms={ALGORITHM.MAUNG}, people_amount=2)
