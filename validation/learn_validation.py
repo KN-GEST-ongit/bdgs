@@ -8,7 +8,7 @@ from scripts.choose_learning_data import choose_learning_data
 from scripts.get_learning_files import get_learning_files
 
 
-def learn_validation(algorithms: set[ALGORITHM], people_amount: int, images_amount: int = None,
+def learn_validation(algorithms: set[ALGORITHM], people_amount: int = None, images_amount: int = None,
                      limit_images_in_single_person_single_recording=None,
                      limit_recordings_of_single_person_single_gesture=None):
     files = get_learning_files(shuffle=True, limit=images_amount,
@@ -45,6 +45,7 @@ def learn_validation(algorithms: set[ALGORITHM], people_amount: int, images_amou
 
 
 if __name__ == "__main__":
-    # learn_validation(algorithms=set(ALGORITHM), limit_recordings_of_single_person_single_gesture=2, people_amount=4) #scenario 2
-    # learn_validation(algorithms=set(ALGORITHM), limit_images_in_single_person_single_recording=10, people_amount=4) #scenario 3
-    learn_validation(algorithms=set(ALGORITHM), people_amount=2) #scenario 4
+    learn_validation(algorithms=set(ALGORITHM)) #scenario 1
+    # learn_validation(algorithms=set(ALGORITHM), limit_recordings_of_single_person_single_gesture=2) #scenario 2
+    # learn_validation(algorithms=set(ALGORITHM), limit_images_in_single_person_single_recording=10) #scenario 3
+    # learn_validation(algorithms=set(ALGORITHM), people_amount=2) #scenario 4
