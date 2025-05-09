@@ -45,4 +45,5 @@ def learn_validation(algorithms: set[ALGORITHM], people_amount: int, images_amou
 
 
 if __name__ == "__main__":
-    learn_validation(algorithms={ALGORITHM.MAUNG}, people_amount=2)
+    learn_validation(algorithms=set(ALGORITHM), limit_recordings_of_single_person_single_gesture=2, people_amount=4) #scenario 2
+    # learn_validation(algorithms=set(ALGORITHM), limit_images_in_single_person_single_recording=10, people_amount=4) #scenario 3
