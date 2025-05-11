@@ -78,9 +78,9 @@ class Maung(BaseAlgorithm):
         perceptron = Perceptron(max_iter=1000, tol=1e-3)
         perceptron.fit(X_train, y_train)
         accuracy = perceptron.score(X_val, y_val)
-        print(f"Accuracy on validation set: {accuracy * 100:.2f}%")
+        # print(f"Accuracy on validation set: {accuracy * 100:.2f}%")
         model_path = os.path.join(target_model_path, 'maung.pkl')
         with open(model_path, 'wb') as f:
             pickle.dump(perceptron, f)
 
-        return accuracy, 0.0
+        return accuracy, 1-accuracy

@@ -87,7 +87,7 @@ class GuptaJaafar(BaseAlgorithm):
         lda_data_test = lda.transform(pca_data_test)
         svm = SVC(kernel='rbf', decision_function_shape='ovo')
         svm.fit(lda_data_train, y_train)
-        train_accuracy = svm.score(lda_data_train, y_train)
+        # train_accuracy = svm.score(lda_data_train, y_train)
         test_accuracy = svm.score(lda_data_test, y_test)
         model_path = os.path.join(target_model_path, 'gupta_jaafar_pca.pkl')
         with open(model_path, 'wb') as f:
@@ -99,4 +99,4 @@ class GuptaJaafar(BaseAlgorithm):
         with open(model_path, 'wb') as f:
             pickle.dump(svm, f)
 
-        return train_accuracy, test_accuracy
+        return test_accuracy, 1-test_accuracy

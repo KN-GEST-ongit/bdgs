@@ -69,24 +69,28 @@ class MohmmadDadi(BaseAlgorithm):
         X_train_pca = pca.fit_transform(X_train)
         X_test_pca = pca.transform(X_test)
 
-        knn = KNeighborsClassifier(n_neighbors=5)
-        knn.fit(X_train_pca, y_train)
-        knn_accuracy = knn.score(X_test_pca, y_test)
-        print(f"KNN Accuracy: {knn_accuracy * 100:.2f}%")
+        # # KNN is alternative for SVM
+        # knn = KNeighborsClassifier(n_neighbors=5)
+        # knn.fit(X_train_pca, y_train)
+        # knn_accuracy = knn.score(X_test_pca, y_test)
+        # print(f"KNN Accuracy: {knn_accuracy * 100:.2f}%")
 
         svm = SVC(kernel='linear')
         svm.fit(X_train_pca, y_train)
         svm_accuracy = svm.score(X_test_pca, y_test)
-        print(f"SVM Accuracy: {svm_accuracy * 100:.2f}%")
+        # print(f"SVM Accuracy: {svm_accuracy * 100:.2f}%")
 
         model_path = os.path.join(target_model_path, 'mohmmad_dadi_pca.pkl')
         with open(model_path, 'wb') as f:
             pickle.dump(pca, f)
-        model_path = os.path.join(target_model_path, 'mohmmad_dadi_knn.pkl')
-        with open(model_path, 'wb') as f:
-            pickle.dump(knn, f)
+
+        # # KNN is alternative for SVM
+        # model_path = os.path.join(target_model_path, 'mohmmad_dadi_knn.pkl')
+        # with open(model_path, 'wb') as f:
+        #     pickle.dump(knn, f)
+
         model_path = os.path.join(target_model_path, 'mohmmad_dadi_svm.pkl')
         with open(model_path, 'wb') as f:
             pickle.dump(svm, f)
 
-        return knn_accuracy, 0
+        return svm_accuracy, 1-svm_accuracy
