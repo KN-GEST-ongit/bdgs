@@ -50,11 +50,13 @@ class GuptaJaafar(BaseAlgorithm):
         preview_image = preview_image.astype(np.uint8)
         return preview_image
 
-    def classify(self, payload: GuptaJaafarPayload, custom_model_path=None,
+    def classify(self, payload: GuptaJaafarPayload, custom_model_dir=None,
                  processing_method: PROCESSING_METHOD = PROCESSING_METHOD.DEFAULT) -> (GESTURE, int):
 
-        model_path = custom_model_path if custom_model_path is not None else os.path.join(ROOT_DIR, "trained_models",
-                                                                                          'gupta_jaafar_svm.pkl')
+        model_filename = "gupta_jaafar_svm.pkl"
+        model_path = os.path.join(custom_model_dir, model_filename) if custom_model_dir is not None else os.path.join(
+            ROOT_DIR, "trained_models",
+            model_filename)
 
         with open(os.path.join(ROOT_DIR, "trained_models", 'gupta_jaafar_pca.pkl'), 'rb') as f:
             pca = pickle.load(f)
@@ -110,4 +112,4 @@ class GuptaJaafar(BaseAlgorithm):
         with open(model_path, 'wb') as f:
             pickle.dump(svm, f)
 
-        return test_accuracy, 1-test_accuracy
+        return test_accuracy, None

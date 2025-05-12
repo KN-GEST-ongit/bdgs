@@ -5,7 +5,6 @@ import cv2
 import numpy as np
 from sklearn.decomposition import PCA
 from sklearn.model_selection import train_test_split
-from sklearn.neighbors import KNeighborsClassifier
 from sklearn.svm import SVC
 
 from bdgs.algorithms.bdgs_algorithm import BaseAlgorithm
@@ -34,10 +33,14 @@ class MohmmadDadi(BaseAlgorithm):
         edges = cv2.Canny(processed, threshold1=100, threshold2=200)
         return edges
 
-    def classify(self, payload: ImagePayload, custom_model_path=None,
+    def classify(self, payload: ImagePayload, custom_model_dir=None,
                  processing_method: PROCESSING_METHOD = PROCESSING_METHOD.DEFAULT) -> (GESTURE, int):
-        model_path = custom_model_path if custom_model_path is not None else os.path.join(ROOT_DIR, "trained_models",
-                                                                                          'mohmmad_dadi_svm.pkl')
+
+        model_filename = "mohmmad_dadi_svm.pkl"
+        model_path = os.path.join(custom_model_dir, model_filename) if custom_model_dir is not None else os.path.join(
+            ROOT_DIR, "trained_models",
+            model_filename)
+
         with open(model_path, 'rb') as f:
             model = pickle.load(f)
         with open(os.path.join(ROOT_DIR, "trained_models", 'mohmmad_dadi_pca.pkl'), 'rb') as f:
@@ -103,4 +106,4 @@ class MohmmadDadi(BaseAlgorithm):
         with open(model_path, 'wb') as f:
             pickle.dump(svm, f)
 
-        return svm_accuracy, 1-svm_accuracy
+        return svm_accuracy, None
