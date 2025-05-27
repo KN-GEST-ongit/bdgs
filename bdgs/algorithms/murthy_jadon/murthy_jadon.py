@@ -93,6 +93,7 @@ class MurthyJadon(BaseAlgorithm):
         epochs = 80
         processed_images = []
         etiquettes = []
+        num_classes = len(GESTURE)
         for data in learning_data:
             hand_image = cv2.imread(data.image_path)
             background_image = cv2.imread(data.bg_image_path)
@@ -110,7 +111,7 @@ class MurthyJadon(BaseAlgorithm):
         model = keras.Sequential([
             keras.layers.InputLayer(input_shape=(900,)),
             keras.layers.Dense(14, activation='relu'),
-            keras.layers.Dense(10, activation='softmax')
+            keras.layers.Dense(num_classes, activation='softmax')
         ])
         model.compile(
             optimizer='adam',
