@@ -92,6 +92,7 @@ class PintoBorges(BaseAlgorithm):
         epochs = 10
         processed_images = []
         etiquettes = []
+        num_classes = len(GESTURE)
         for data in learning_data:
             hand_image = cv2.imread(data.image_path)
             image = self.process_image(
@@ -116,7 +117,7 @@ class PintoBorges(BaseAlgorithm):
             layers.Flatten(),
             layers.Dense(400, activation='relu'),
             layers.Dense(800, activation='relu'),
-            layers.Dense(10, activation='softmax')
+            layers.Dense(num_classes, activation='softmax')
         ])
 
         model.compile(optimizer='adam', loss='sparse_categorical_crossentropy', metrics=['accuracy'])
