@@ -33,7 +33,7 @@ def create_model(num_classes):
     model.add(Flatten())
     model.add(Dense(num_classes, activation="softmax"))
     model.compile(
-        optimizer=SGD(learning_rate=0.01, momentum=0.9),
+        optimizer=SGD(learning_rate=0.001, momentum=0.9),
         loss=SparseCategoricalCrossentropy(from_logits=False),
         metrics=["accuracy"],
     )
