@@ -42,14 +42,13 @@ class ZhuangYang(BaseAlgorithm):
         Y_train = model["Y_train"]
         labels_train = model["labels_train"]
         phi = model["phi"]
-        sparsity_level = model["sparsity_level"]
 
         processed_image = self.process_image(payload)
         image_vector = image_to_vector(processed_image)
 
         y_0 = W_pinv @ image_vector
 
-        pred_label, certainty = cs_classify_test_sample(y_0, Y_train, labels_train, phi, sparsity_level)
+        pred_label, certainty = cs_classify_test_sample(y_0, Y_train, labels_train, phi)
         pred_label += 1
 
         return GESTURE(pred_label), certainty
@@ -98,7 +97,7 @@ class ZhuangYang(BaseAlgorithm):
         predictions = []
         for i in range(Y_test.shape[1]):
             y_0 = Y_test[:, i].reshape(-1, 1)
-            pred, certainty = cs_classify_test_sample(y_0, Y_train, labels_train, phi, sparsity_level)
+            pred, certainty = cs_classify_test_sample(y_0, Y_train, labels_train, phi)
             predictions.append(pred)
 
         model = {
@@ -106,7 +105,6 @@ class ZhuangYang(BaseAlgorithm):
             "Y_train": Y_train,
             "labels_train": labels_train,
             "phi": phi,
-            "sparsity_level": sparsity_level
         }
         filepath = os.path.join(target_model_path, "zhuang_yang.pkl")
         with open(filepath, "wb") as f:
@@ -134,35 +132,25 @@ def nmf_update(v, w, h, max_iter=100, epsilon=1e-10):
     return w, h
 
 
-def omp(a, y0, sparsity_level=10):
-    d, m, = a.shape
-    residual = y0.copy()
-    idx_selected = []
-    theta_ls = []
+def ista(a, y0, lam=0.1, max_iter=1000):
+    m = a.shape[1]
     theta = np.zeros((m, 1))
 
-    for _ in range(sparsity_level):
-        correlations = a.T @ residual
-        idx = np.argmax(np.abs(correlations))
+    L = np.linalg.norm(a.T @ a, 2)
+    t = 1/L
 
-        if idx not in idx_selected:
-            idx_selected.append(idx)
+    for _ in range(max_iter):
+        grad = a.T @ (a @ theta - y0)
+        theta_new = np.sign(theta - t * grad) * np.maximum(np.abs(theta - t * grad) - lam*t, 0)
 
-        A_selected = a[:, idx_selected]
-        theta_ls, _, _, _ = np.linalg.lstsq(A_selected, y0, rcond=None)
-
-        residual = y0 - A_selected @ theta_ls
-
-        if np.linalg.norm(residual) < 1e-5:
+        if np.linalg.norm(theta_new - theta) < 1e-6:
             break
-
-    for i, idx in enumerate(idx_selected):
-        theta[idx] = theta_ls[i]
+        theta = theta_new
 
     return theta
 
 
-def classify_by_reconstruction_error(a, y0, theta, labels_train):
+def classify_by_reconstruction_error(y_train, theta, y0, labels_train):
     classes = np.unique(labels_train)
     errors = []
 
@@ -170,7 +158,7 @@ def classify_by_reconstruction_error(a, y0, theta, labels_train):
         mask = (labels_train == c).astype(float).reshape(-1, 1)
         theta_i = theta * mask
 
-        Y_i = a @ theta_i
+        Y_i = y_train @ theta_i
 
         error = np.linalg.norm(y0 - Y_i)
         errors.append(error)
@@ -179,12 +167,13 @@ def classify_by_reconstruction_error(a, y0, theta, labels_train):
     return best_class, errors
 
 
-def cs_classify_test_sample(y_0, y_train, labels_train, phi, sparsity_level=10):
+def cs_classify_test_sample(y_0, y_train, labels_train, phi):
     A = phi @ y_train  # (d, m)
     Y0 = phi @ y_0  # (d, 1)
 
-    theta = omp(A, Y0, sparsity_level)
-    predicted_label, errors = classify_by_reconstruction_error(A, Y0, theta, labels_train)
+    theta = ista(A, Y0, max_iter=1000)
+
+    predicted_label, errors = classify_by_reconstruction_error(y_train, theta, y_0, labels_train)
 
     total_error = np.sum(errors)
     predicted_error = errors[np.argmin(errors)]
