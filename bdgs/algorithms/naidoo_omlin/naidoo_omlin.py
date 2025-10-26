@@ -20,7 +20,7 @@ def extract_features(image: ndarray) -> np.array:
 
     h, w, _ = hsv.shape
     # values of n, m were not specified in the paper. to be determined with experiments.
-    n, m = 4, 4
+    n, m = 16, 16
     block_h = h // n
     block_w = w // m
 
