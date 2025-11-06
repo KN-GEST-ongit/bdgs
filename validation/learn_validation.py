@@ -24,6 +24,8 @@ def learn_validation(scenario_name: str, algorithms: set[ALGORITHM], people_amou
         "timestamp": datetime.now().strftime("%d/%m/%YT%H:%M:%S"),
         "images": len(files),
         "max_people_amount": people_amount,
+        "limit_images_in_single_person_single_recording": limit_images_in_single_person_single_recording,
+        "limit_recordings_of_single_person_single_gesture": limit_recordings_of_single_person_single_gesture,
         "algorithms": {}
     }
 
