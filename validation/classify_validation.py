@@ -72,4 +72,4 @@ if __name__ == "__main__":
                   ALGORITHM.MAUNG, ALGORITHM.MOHMMAD_DADI, ALGORITHM.MURTHY_JADON, ALGORITHM.NGUYEN_HUYNH,
                   ALGORITHM.PINTO_BORGES}
 
-    classify_validation("sc2", algorithms=algorithms, images_amount=50)
+    classify_validation("sc1", algorithms=algorithms, images_amount=50)

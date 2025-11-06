@@ -1,58 +1,53 @@
 {
   "type": "learn_test",
-  "timestamp": "29/05/2025T14:25:53",
-  "images": 8000,
+  "timestamp": "06/11/2025T17:33:46",
+  "images": 5000,
   "max_people_amount": null,
   "algorithms": {
-    "ZHUANG_YANG": {
-      "algorithm": "ZHUANG_YANG",
-      "accuracy": 0.635,
-      "loss": 0.365
+    "CHANG_CHEN": {
+      "algorithm": "CHANG_CHEN",
+      "accuracy": 1.0,
+      "loss": null
     },
-    "MURTHY_JADON": {
-      "algorithm": "MURTHY_JADON",
-      "accuracy": 0.7587500214576721,
-      "loss": 1.0085636377334595
+    "MAUNG": {
+      "algorithm": "MAUNG",
+      "accuracy": 0.983,
+      "loss": null
     },
-    "MOHMMAD_DADI": {
-      "algorithm": "MOHMMAD_DADI",
-      "accuracy": 0.99,
+    "NGUYEN_HUYNH": {
+      "algorithm": "NGUYEN_HUYNH",
+      "accuracy": 0.9008,
+      "loss": null
+    },
+    "GUPTA_JAAFAR": {
+      "algorithm": "GUPTA_JAAFAR",
+      "accuracy": 0.592,
       "loss": null
     },
     "EID_SCHWENKER": {
       "algorithm": "EID_SCHWENKER",
-      "accuracy": 0.9725000262260437,
-      "loss": 0.07874094694852829
-    },
-    "MOHANTY_RAMBHATLA": {
-      "algorithm": "MOHANTY_RAMBHATLA",
-      "accuracy": 0.4612500071525574,
-      "loss": 0.031478747725486755
-    },
-    "GUPTA_JAAFAR": {
-      "algorithm": "GUPTA_JAAFAR",
-      "accuracy": 0.568125,
-      "loss": null
-    },
-    "ADITHYA_RAJESH": {
-      "algorithm": "ADITHYA_RAJESH",
-      "accuracy": 0.9624999761581421,
-      "loss": 0.13336189091205597
-    },
-    "MAUNG": {
-      "algorithm": "MAUNG",
-      "accuracy": 0.97625,
-      "loss": null
-    },
-    "ISLAM_HOSSAIN_ANDERSSON": {
-      "algorithm": "ISLAM_HOSSAIN_ANDERSSON",
-      "accuracy": 0.9712499976158142,
-      "loss": 0.1453513503074646
+      "accuracy": 0.9850000143051147,
+      "loss": 0.04023459181189537
     },
     "PINTO_BORGES": {
       "algorithm": "PINTO_BORGES",
-      "accuracy": 0.9937499761581421,
-      "loss": 0.037221793085336685
+      "accuracy": 0.972000002861023,
+      "loss": 0.10314250737428665
+    },
+    "MURTHY_JADON": {
+      "algorithm": "MURTHY_JADON",
+      "accuracy": 0.5830000042915344,
+      "loss": 1.5000437498092651
+    },
+    "JOSHI_KUMAR": {
+      "algorithm": "JOSHI_KUMAR",
+      "accuracy": 0.9998,
+      "loss": null
+    },
+    "MOHMMAD_DADI": {
+      "algorithm": "MOHMMAD_DADI",
+      "accuracy": 0.995,
+      "loss": null
     }
   }
 }

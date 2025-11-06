@@ -1,59 +1,54 @@
 {
   "type": "classify_test",
-  "timestamp": "29/05/2025T21:55:35",
+  "timestamp": "06/11/2025T21:54:46",
   "images": 50,
   "repeat_amount": 1,
   "max_people_amount": null,
   "algorithms": {
-    "ZHUANG_YANG": {
-      "algorithm": "ZHUANG_YANG",
-      "correct_percent": 36.0,
-      "average_certainty": 0.9733313849748707
-    },
-    "MOHMMAD_DADI": {
-      "algorithm": "MOHMMAD_DADI",
-      "correct_percent": 24.0,
-      "average_certainty": 41.4
-    },
-    "MAUNG": {
-      "algorithm": "MAUNG",
-      "correct_percent": 38.0,
-      "average_certainty": null
-    },
-    "GUPTA_JAAFAR": {
-      "algorithm": "GUPTA_JAAFAR",
-      "correct_percent": 32.0,
-      "average_certainty": 63.1
-    },
-    "PINTO_BORGES": {
-      "algorithm": "PINTO_BORGES",
-      "correct_percent": 40.0,
-      "average_certainty": 100.0
+    "CHANG_CHEN": {
+      "algorithm": "CHANG_CHEN",
+      "correct_percent": 44.0,
+      "average_certainty": 95.08
     },
     "EID_SCHWENKER": {
       "algorithm": "EID_SCHWENKER",
-      "correct_percent": 30.0,
-      "average_certainty": 99.58
+      "correct_percent": 44.0,
+      "average_certainty": 95.24
     },
-    "MOHANTY_RAMBHATLA": {
-      "algorithm": "MOHANTY_RAMBHATLA",
-      "correct_percent": 20.0,
-      "average_certainty": 10.7
+    "PINTO_BORGES": {
+      "algorithm": "PINTO_BORGES",
+      "correct_percent": 54.0,
+      "average_certainty": 99.98
+    },
+    "MOHMMAD_DADI": {
+      "algorithm": "MOHMMAD_DADI",
+      "correct_percent": 4.0,
+      "average_certainty": 36.0
+    },
+    "MAUNG": {
+      "algorithm": "MAUNG",
+      "correct_percent": 52.0,
+      "average_certainty": null
+    },
+    "NGUYEN_HUYNH": {
+      "algorithm": "NGUYEN_HUYNH",
+      "correct_percent": 50.0,
+      "average_certainty": 91.77999877929688
     },
     "MURTHY_JADON": {
       "algorithm": "MURTHY_JADON",
-      "correct_percent": 32.0,
-      "average_certainty": 88.92
+      "correct_percent": 48.0,
+      "average_certainty": 92.24
     },
-    "ADITHYA_RAJESH": {
-      "algorithm": "ADITHYA_RAJESH",
-      "correct_percent": 30.0,
-      "average_certainty": 76.88
+    "GUPTA_JAAFAR": {
+      "algorithm": "GUPTA_JAAFAR",
+      "correct_percent": 4.0,
+      "average_certainty": 70.3
     },
-    "ISLAM_HOSSAIN_ANDERSSON": {
-      "algorithm": "ISLAM_HOSSAIN_ANDERSSON",
-      "correct_percent": 46.0,
-      "average_certainty": 78.54
+    "JOSHI_KUMAR": {
+      "algorithm": "JOSHI_KUMAR",
+      "correct_percent": 50.0,
+      "average_certainty": 74.28
     }
   }
 }

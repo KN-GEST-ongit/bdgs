@@ -46,7 +46,7 @@ def learn_validation(scenario_name: str, algorithms: set[ALGORITHM], people_amou
         print(f"Learned {algorithm.value}: {acc}")
 
     os.makedirs(os.path.abspath(f'results/{scenario_name}'), exist_ok=True)
-    with open(f'results/{scenario_name}/validation_learn_results.json', 'w') as outfile:
+    with open(f'results/{scenario_name}/{scenario_name}_validation_learn_results.json', 'w') as outfile:
         json.dump(test_data, outfile, indent=2)
 
 
@@ -56,7 +56,7 @@ if __name__ == "__main__":
                   ALGORITHM.MAUNG, ALGORITHM.MOHMMAD_DADI, ALGORITHM.MURTHY_JADON, ALGORITHM.NGUYEN_HUYNH,
                   ALGORITHM.PINTO_BORGES}
 
-    # learn_validation("sc1", algorithms=algorithms) #scenario 1
+    learn_validation("sc1", algorithms=algorithms) #scenario 1
     # learn_validation("sc2", algorithms=algorithms, limit_recordings_of_single_person_single_gesture=2) #scenario 2
-    learn_validation("sc3", algorithms=algorithms, limit_images_in_single_person_single_recording=10)  # scenario 3
-    # learn_validation("sc4", algorithms=algorithms, people_amount=2) #scenario 4
+    # learn_validation("sc3", algorithms=algorithms, limit_images_in_single_person_single_recording=10)  # scenario 3
+    # learn_validation("sc4", algorithms=algorithms, people_amount=2)  # scenario 4

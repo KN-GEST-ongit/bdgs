@@ -11,8 +11,15 @@ from scripts.choose_payload import choose_payload
 
 
 def show_processed(image, processed):
+    if processed.dtype == np.float64:
+        if processed.max() <= 1.0:
+            processed = (processed * 255).astype(np.uint8)
+        else:
+            processed = np.clip(processed, 0, 255).astype(np.uint8)
+
     if len(processed.shape) == 2:
         processed = cv2.cvtColor(processed, cv2.COLOR_GRAY2BGR)
+
     processed = processed.squeeze()
     if processed.shape[0] == 0 or processed.shape[1] == 0:
         print("Processed image has zero dimensions. Skipping thumbnail generation.")
@@ -25,6 +32,7 @@ def show_processed(image, processed):
             thumbnail = cv2.cvtColor(thumbnail, cv2.COLOR_GRAY2BGR)
 
         image[0:thumbnail.shape[0], 0:thumbnail.shape[1]] = thumbnail
+
 
 
 def show_prediction_text(certainty, image, prediction):
@@ -62,7 +70,7 @@ def detect_hand(frame):
     return None
 
 
-def camera_test(algorithm: ALGORITHM, show_prediction_tresh=70):
+def camera_test(algorithm: ALGORITHM, show_prediction_tresh=60):
     cap = cv2.VideoCapture(0)
     if not cap.isOpened():
         print("Cannot open camera.")

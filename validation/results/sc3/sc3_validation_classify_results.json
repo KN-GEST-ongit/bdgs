@@ -1,59 +1,54 @@
 {
   "type": "classify_test",
-  "timestamp": "29/05/2025T21:54:00",
+  "timestamp": "06/11/2025T18:04:37",
   "images": 50,
   "repeat_amount": 1,
   "max_people_amount": null,
   "algorithms": {
-    "GUPTA_JAAFAR": {
-      "algorithm": "GUPTA_JAAFAR",
-      "correct_percent": 60.0,
-      "average_certainty": 57.02
-    },
-    "PINTO_BORGES": {
-      "algorithm": "PINTO_BORGES",
-      "correct_percent": 96.0,
-      "average_certainty": 99.94
+    "CHANG_CHEN": {
+      "algorithm": "CHANG_CHEN",
+      "correct_percent": 100.0,
+      "average_certainty": 100.0
     },
     "MURTHY_JADON": {
       "algorithm": "MURTHY_JADON",
-      "correct_percent": 88.0,
-      "average_certainty": 79.54
+      "correct_percent": 56.00000000000001,
+      "average_certainty": 46.94
     },
-    "MOHANTY_RAMBHATLA": {
-      "algorithm": "MOHANTY_RAMBHATLA",
-      "correct_percent": 72.0,
-      "average_certainty": 23.6
+    "PINTO_BORGES": {
+      "algorithm": "PINTO_BORGES",
+      "correct_percent": 98.0,
+      "average_certainty": 100.0
     },
     "MOHMMAD_DADI": {
       "algorithm": "MOHMMAD_DADI",
-      "correct_percent": 100.0,
-      "average_certainty": 95.3
+      "correct_percent": 10.0,
+      "average_certainty": 32.6
     },
-    "ZHUANG_YANG": {
-      "algorithm": "ZHUANG_YANG",
-      "correct_percent": 62.0,
-      "average_certainty": 0.9836969743786534
-    },
-    "ADITHYA_RAJESH": {
-      "algorithm": "ADITHYA_RAJESH",
+    "EID_SCHWENKER": {
+      "algorithm": "EID_SCHWENKER",
       "correct_percent": 100.0,
-      "average_certainty": 97.18
+      "average_certainty": 99.58
     },
-    "ISLAM_HOSSAIN_ANDERSSON": {
-      "algorithm": "ISLAM_HOSSAIN_ANDERSSON",
-      "correct_percent": 100.0,
-      "average_certainty": 90.18
+    "NGUYEN_HUYNH": {
+      "algorithm": "NGUYEN_HUYNH",
+      "correct_percent": 94.0,
+      "average_certainty": 91.26000213623047
     },
     "MAUNG": {
       "algorithm": "MAUNG",
       "correct_percent": 100.0,
       "average_certainty": null
     },
-    "EID_SCHWENKER": {
-      "algorithm": "EID_SCHWENKER",
-      "correct_percent": 98.0,
-      "average_certainty": 97.7
+    "GUPTA_JAAFAR": {
+      "algorithm": "GUPTA_JAAFAR",
+      "correct_percent": 22.0,
+      "average_certainty": 45.78
+    },
+    "JOSHI_KUMAR": {
+      "algorithm": "JOSHI_KUMAR",
+      "correct_percent": 100.0,
+      "average_certainty": 95.38
     }
   }
 }
