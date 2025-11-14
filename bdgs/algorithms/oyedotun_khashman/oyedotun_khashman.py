@@ -20,6 +20,7 @@ from bdgs.models.image_payload import ImagePayload
 from bdgs.models.learning_data import LearningData
 from bdgs.algorithms.oyedotun_khashman.oyedotun_khashman_payload import OyedotunKhashmanPayload
 from definitions import NUM_CLASSES, ROOT_DIR
+from bdgs.common.set_options import set_options
 
 def extract_hand(image: ndarray):
     binary_image = image.astype(np.uint8)
@@ -33,7 +34,7 @@ def extract_hand(image: ndarray):
     
     return image[y_min:y_max + 1, x_min:x_max + 1]
 
-def create_model_cnn1(num_classes):
+def create_model_cnn1(num_classes, learning_rate):
     model = Sequential()
     model.add(Rescaling(1.0 / 255))
     # H1
@@ -60,13 +61,13 @@ def create_model_cnn1(num_classes):
     model.add(Dense(num_classes, activation='softmax'))
 
     model.compile(
-        optimizer=SGD(learning_rate=0.8),
+        optimizer=SGD(learning_rate=learning_rate),
         loss=MeanSquaredError(),
         metrics=["accuracy"],
     )
     return model
 
-def create_model_cnn2(num_classes):
+def create_model_cnn2(num_classes, learning_rate):
     model = Sequential()
     model.add(Rescaling(1.0 / 255))
     # H1
@@ -103,13 +104,13 @@ def create_model_cnn2(num_classes):
     model.add(Dense(num_classes, activation='softmax'))
 
     model.compile(
-        optimizer=SGD(learning_rate=0.8),
+        optimizer=SGD(learning_rate=learning_rate),
         loss=MeanSquaredError(),
         metrics=["accuracy"],
     )
     return model
 
-def create_model_cnn3(num_classes):
+def create_model_cnn3(num_classes, learning_rate):
     model = Sequential()
     model.add(Rescaling(1.0 / 255))
     # H1
@@ -155,7 +156,7 @@ def create_model_cnn3(num_classes):
     model.add(Dense(NUM_CLASSES, activation='softmax'))
 
     model.compile(
-        optimizer=SGD(learning_rate=0.8),
+        optimizer=SGD(learning_rate=learning_rate),
         loss=MeanSquaredError(),
         metrics=["accuracy"],
     )
@@ -261,8 +262,14 @@ class OyedotunKhashman(BaseAlgorithm):
 
         return GESTURE(predicted_class), certainty
 
-    def learn(self, learning_data: list[LearningData], target_model_path: str) -> (float, float):
-     
+    def learn(self, learning_data: list[LearningData], target_model_path: str, custom_options: dict = None) -> (float, float):
+        # these are defualt for CNN2
+        default_options = {
+            "batch_size": 5,    
+            "epochs": 400,
+            "learning_rate": 0.8,
+        }
+        options = set_options(default_options, custom_options)
         processed_images = []
         labels = []
         for data in learning_data:
@@ -286,11 +293,11 @@ class OyedotunKhashman(BaseAlgorithm):
         y_val = to_categorical(y_val, NUM_CLASSES)
 
         # For CNNs training:
-        model = create_model_cnn2(NUM_CLASSES)
+        model = create_model_cnn2(NUM_CLASSES, options["learning_rate"])
         history = model.fit(x_train, y_train,
                             validation_data=(x_val, y_val),
-                            batch_size=5,
-                            epochs=400,
+                            batch_size=options["batch_size"],
+                            epochs=options["epochs"],
                             verbose="auto")
         test_loss, test_acc = model.evaluate(x_val, y_val, verbose=0)
 
