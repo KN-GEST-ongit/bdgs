@@ -9,11 +9,10 @@ from bdgs.data.gesture import GESTURE
 from bdgs.data.processing_method import PROCESSING_METHOD
 from scripts.choose_payload import choose_payload
 from scripts.file_coords_parser import parse_file_coords, parse_etiquette
-from scripts.get_learning_files import get_learning_files
-
+from scripts.loaders import BDGSDatasetLoader
 
 def image_processing_visual_test(algorithm: ALGORITHM, images_amount: int):
-    files = get_learning_files(shuffle=True, limit=images_amount, limit_images_in_single_person_single_recording=1,
+    files = BDGSDatasetLoader.get_learning_files(shuffle=True, limit=images_amount, limit_images_in_single_person_single_recording=1,
                                base_path=os.path.abspath("../../bdgs_photos"))
     for image_file in files:
         image = cv2.imread(image_file[0])
@@ -35,7 +34,7 @@ def image_processing_visual_test(algorithm: ALGORITHM, images_amount: int):
 
 
 def classification_visual_test(algorithm: ALGORITHM, images_amount: int):
-    files = get_learning_files(shuffle=True, limit=images_amount,
+    files = BDGSDatasetLoader.get_learning_files(shuffle=True, limit=images_amount,
                                base_path=os.path.abspath("../../bdgs_photos"))
     for image_file in files:
         image = cv2.imread(image_file[0])
