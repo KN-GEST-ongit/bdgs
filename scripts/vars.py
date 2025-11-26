@@ -10,3 +10,4 @@ JOCHEN_TRIESCH_II_IMAGES_PATH = os.path.abspath("../bdgs_third_party_datasets/Bo
 SEBASTEIN_MARCEL_IMAGES_PATH = os.path.abspath("../bdgs_third_party_datasets/Marcel-Train")
 THOMAS_MOESLUND_IMAGES_PATH = os.path.abspath("../bdgs_third_party_datasets/Thomas_Moeslund")
 LEAP_MOTION_IMAGES_PATH = os.path.abspath("../bdgs_third_party_datasets/leapGestRecog")
+ALBARCZA_IMAGES_PATH = os.path.abspath("../bdgs_third_party_datasets/albarcza")
