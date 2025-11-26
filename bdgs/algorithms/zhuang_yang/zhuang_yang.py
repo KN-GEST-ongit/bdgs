@@ -1,4 +1,5 @@
 import os
+from enum import Enum
 
 import cv2
 import numpy as np
@@ -30,7 +31,13 @@ class ZhuangYang(BaseAlgorithm):
         return image
 
     def classify(self, payload: ZhuangYangPayload, custom_model_path=None,
-                 processing_method: PROCESSING_METHOD = PROCESSING_METHOD.DEFAULT) -> (GESTURE, int):
+                 processing_method: PROCESSING_METHOD = PROCESSING_METHOD.DEFAULT,
+                 custom_options: dict = None) -> (Enum, int):
+        default_options = {
+            "gesture_enum": GESTURE
+        }
+        options = set_options(default_options, custom_options)
+        gesture_enum = options['gesture_enum']
         model_filename = "zhuang_yang.pkl"
         model_path = os.path.join(custom_model_path, model_filename) if custom_model_path is not None else os.path.join(
             ROOT_DIR, "trained_models",
@@ -51,7 +58,7 @@ class ZhuangYang(BaseAlgorithm):
         pred_label, certainty = cs_classify_test_sample(y_0, Y_train, labels_train, phi)
         pred_label += 1
 
-        return GESTURE(pred_label), certainty
+        return gesture_enum(pred_label), certainty
 
     def learn(self, learning_data: list[ZhuangYangLearningData], target_model_path: str, custom_options: dict = None) -> (float, float):
         default_options = {

@@ -21,7 +21,7 @@ class ThomasMoeslundDatasetLoader(BaseDatasetLoader):
             for file in files:
                 if file.endswith(".tif"):
                     label = file[0]
-                    label_int = ord(label) - 64
+                    label_int = ord(label.upper()) - 64
                     img_path = os.path.join(root, file)
                     img = cv2.imread(img_path)
                     if img is None:

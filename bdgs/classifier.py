@@ -1,10 +1,10 @@
 import os
+from enum import Enum
 
 from numpy import ndarray
 
 from bdgs.data.algorithm import ALGORITHM
 from bdgs.data.algorithm_functions import ALGORITHM_FUNCTIONS
-from bdgs.data.gesture import GESTURE
 from bdgs.data.processing_method import PROCESSING_METHOD
 from bdgs.models.image_payload import ImagePayload
 from bdgs.models.learning_data import LearningData
@@ -28,7 +28,8 @@ def process_image(algorithm: ALGORITHM, payload: ImagePayload,
 
 
 def classify(algorithm: ALGORITHM, payload: ImagePayload, custom_model_dir=None,
-             processing_method: PROCESSING_METHOD = PROCESSING_METHOD.DEFAULT) -> (GESTURE, int):
+             processing_method: PROCESSING_METHOD = PROCESSING_METHOD.DEFAULT,
+             custom_options:dict = None) -> (Enum, int):
     """
     Classifies an image using the specified gesture recognition algorithm.
 
@@ -36,6 +37,7 @@ def classify(algorithm: ALGORITHM, payload: ImagePayload, custom_model_dir=None,
     :param payload: Image payload class instance
     :param custom_model_dir: Optional path to a directory containing a custom pre-trained model.
     :param processing_method: A PROCESSING_METHOD enum value, defaults to PROCESSING_METHOD.DEFAULT.
+    :param custom_options: Optional dictionary to override default training parameters.
 
     :return: Tuple (prediction, certainty)
             

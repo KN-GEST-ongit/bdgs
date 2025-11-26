@@ -1,5 +1,6 @@
 import os
 import pickle
+from enum import Enum
 
 import cv2
 import numpy as np
@@ -121,7 +122,14 @@ class JoshiKumar(BaseAlgorithm):
         return accuracy, None
 
     def classify(self, payload: JoshiKumarPayload, custom_model_path=None,
-                 processing_method: PROCESSING_METHOD = PROCESSING_METHOD.DEFAULT) -> (GESTURE, int):
+                 processing_method: PROCESSING_METHOD = PROCESSING_METHOD.DEFAULT,
+                 custom_options: dict = None) -> (Enum, int):
+        default_options = {
+            "gesture_enum": GESTURE
+        }
+        options = set_options(default_options, custom_options)
+        gesture_enum = options['gesture_enum']
+
         model_path = os.path.join(custom_model_path or os.path.join(ROOT_DIR, "trained_models"), "joshi_kumar.pkl")
 
         with open(model_path, "rb") as f:
@@ -134,4 +142,4 @@ class JoshiKumar(BaseAlgorithm):
         proba = model.predict_proba(features)
         confidence = round(100 * np.max(proba), 0)
 
-        return GESTURE(prediction[0] + 1), confidence
+        return gesture_enum(prediction[0] + 1), confidence

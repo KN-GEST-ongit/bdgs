@@ -17,10 +17,10 @@ class JochenTrieschIIDatasetLoader(BaseDatasetLoader):
             for file in files:
                 if not file.lower().endswith((".tiff")):
                     continue
-                m = re.search(r"([A-Za-z])\d", file)
+                m = re.search(r"([A-Za-z])(\d{2})", file)
                 if not m:
                     continue
-                label_int = m.group(1)
+                label_int = m.group(2)
                 img_path = os.path.join(root, file)
                 img = cv2.imread(img_path)
                 img_h, img_w = img.shape[:2]

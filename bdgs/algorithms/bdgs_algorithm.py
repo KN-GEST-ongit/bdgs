@@ -1,8 +1,8 @@
 from abc import abstractmethod, ABC
+from enum import Enum
 
 from numpy import ndarray
 
-from bdgs.data.gesture import GESTURE
 from bdgs.data.processing_method import PROCESSING_METHOD
 from bdgs.models.image_payload import ImagePayload
 from bdgs.models.learning_data import LearningData
@@ -18,7 +18,8 @@ class BaseAlgorithm(ABC):
 
     @abstractmethod
     def classify(self, payload: ImagePayload, custom_model_dir=None,
-                 processing_method: PROCESSING_METHOD = PROCESSING_METHOD.DEFAULT) -> GESTURE:
+                 processing_method: PROCESSING_METHOD = PROCESSING_METHOD.DEFAULT,
+                 custom_options:dict = None) -> Enum:
         """Classify gesture based on static image"""
         raise NotImplementedError("Method classify not implemented")
 
