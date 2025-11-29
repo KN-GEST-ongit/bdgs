@@ -8,12 +8,12 @@ from bdgs import classify
 from bdgs.data.algorithm import ALGORITHM
 from scripts.choose_payload import choose_payload
 from scripts.file_coords_parser import parse_file_coords, parse_etiquette
-from scripts.get_learning_files import get_learning_files
+from scripts.loaders import BDGSDatasetLoader
 
 
 def classify_validation(scenario_name:str, algorithms: set[ALGORITHM], images_amount: int, repeat_amount: int = 1,
                         people_amount: int = None):
-    files = get_learning_files(shuffle=True, limit=images_amount, limit_images_in_single_person_single_recording=5,
+    files = BDGSDatasetLoader.get_learning_files(shuffle=True, limit=images_amount, limit_images_in_single_person_single_recording=5,
                                limit_people=people_amount, base_path=os.path.abspath("../../bdgs_photos"))
 
     print(f"Number of files: {len(files)}")

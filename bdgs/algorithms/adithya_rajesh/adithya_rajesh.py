@@ -1,4 +1,5 @@
 import os
+from enum import Enum
 
 import cv2
 import keras
@@ -82,7 +83,13 @@ class AdithyaRajesh(BaseAlgorithm):
         return image
 
     def classify(self, payload: AdithyaRajeshPayload, custom_model_dir=None,
-                 processing_method: PROCESSING_METHOD = PROCESSING_METHOD.DEFAULT) -> (GESTURE, int):
+                    processing_method: PROCESSING_METHOD = PROCESSING_METHOD.DEFAULT,
+                    custom_options: dict = None) -> (Enum, int):
+        default_options = {
+            "gesture_enum": GESTURE
+        }
+        options = set_options(default_options, custom_options)
+        gesture_enum = options['gesture_enum']
 
         model_filename = "adithya_rajesh.keras"
         model_path = os.path.join(custom_model_dir, model_filename) if custom_model_dir is not None else os.path.join(
@@ -100,14 +107,15 @@ class AdithyaRajesh(BaseAlgorithm):
             predicted_class = np.argmax(prediction) + 1
             certainty = int(np.max(prediction) * 100)
 
-        return GESTURE(predicted_class), certainty
+        return gesture_enum(predicted_class), certainty
 
     def learn(self, learning_data: list[AdithyaRajeshLearningData], target_model_path: str, custom_options: dict = None) -> (float, float):
         default_options = {
             "batch_size": 32,    
             "epochs": 20,
             "learning_rate": 0.001,
-            "momentum": 0.9
+            "momentum": 0.9,
+            "num_classes": NUM_CLASSES,
         }
         options = set_options(default_options, custom_options)
 
@@ -124,7 +132,7 @@ class AdithyaRajesh(BaseAlgorithm):
         processed_images = np.array(processed_images)
         labels = np.array(labels)
 
-        model = create_model(NUM_CLASSES, options['learning_rate'], options['momentum'])
+        model = create_model(options['num_classes'], options['learning_rate'], options['momentum'])
 
         x_train, x_val, y_train, y_val = train_test_split(processed_images, labels, test_size=0.2,
                                                           random_state=42)

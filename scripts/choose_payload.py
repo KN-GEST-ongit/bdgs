@@ -17,7 +17,11 @@ from bdgs.models.image_payload import ImagePayload
 def choose_payload(algorithm, background, coords, image):
     if algorithm == ALGORITHM.MURTHY_JADON:
         payload = MurthyJadonPayload(image=image, bg_image=background)
+        if background is None:
+            raise ValueError(f"Algorithm {algorithm} requires background image")
     elif algorithm == ALGORITHM.ISLAM_HOSSAIN_ANDERSSON:
+        if background is None:
+            raise ValueError(f"Algorithm {algorithm} requires background image")
         payload = IslamHossainAnderssonPayload(image=image, bg_image=background, coords=coords)
     elif algorithm == ALGORITHM.PINTO_BORGES:
         payload = PintoBorgesPayload(image=image, coords=coords)

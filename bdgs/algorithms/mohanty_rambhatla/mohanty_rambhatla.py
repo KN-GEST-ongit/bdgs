@@ -1,4 +1,5 @@
 import os
+from enum import Enum
 
 import cv2
 from numpy import ndarray
@@ -70,7 +71,13 @@ class MohantyRambhatla(BaseAlgorithm):
         return image
 
     def classify(self, payload: MohantyRambhatlaPayload, custom_model_path = None,
-                 processing_method: PROCESSING_METHOD = PROCESSING_METHOD.DEFAULT) -> GESTURE:
+                 processing_method: PROCESSING_METHOD = PROCESSING_METHOD.DEFAULT, custom_options: dict = None) -> GESTURE:
+            default_options = {
+                "gesture_enum": GESTURE
+            }
+            options = set_options(default_options, custom_options)
+            gesture_enum = options['gesture_enum']
+            
             model_filename = "mohanty_rambhatla.keras"
             model_path = os.path.join(custom_model_path, model_filename) if custom_model_path is not None else os.path.join(
                 ROOT_DIR, "trained_models",
@@ -87,7 +94,7 @@ class MohantyRambhatla(BaseAlgorithm):
                 predicted_class = np.argmax(prediction) + 1
                 certainty = int(np.max(prediction) * 100)
 
-            return GESTURE(predicted_class), certainty
+            return gesture_enum(predicted_class), certainty
 
     def learn(self, learning_data: list[LearningData], target_model_path: str
               , custom_options: dict = None)-> (float, float):
@@ -108,7 +115,8 @@ class MohantyRambhatla(BaseAlgorithm):
             "learning_rate": 0.01,
             "enable_augmentation": False,
             "dropout_rate": 0.5,
-            "use_relu": True
+            "use_relu": True,
+            "num_classes": NUM_CLASSES
         }
         options = set_options(default_options, custom_options)
 
@@ -133,14 +141,14 @@ class MohantyRambhatla(BaseAlgorithm):
         labels = np.array(labels)
 
         model = create_model(learning_rate=options["learning_rate"], 
-                             use_relu=options["use_relu"], num_classes=NUM_CLASSES,
+                             use_relu=options["use_relu"], num_classes=options["num_classes"],
                              dropout_rate=options["dropout_rate"])
 
         x_train, x_val, y_train, y_val = train_test_split(processed_images, labels, test_size=0.2,
                                                           random_state=42)
 
-        y_train = to_categorical(y_train, num_classes=NUM_CLASSES)
-        y_val = to_categorical(y_val, num_classes=NUM_CLASSES)
+        y_train = to_categorical(y_train, num_classes=options["num_classes"])
+        y_val = to_categorical(y_val, num_classes=options["num_classes"])
 
         history = model.fit(x_train, y_train,
                             validation_data=(x_val, y_val),

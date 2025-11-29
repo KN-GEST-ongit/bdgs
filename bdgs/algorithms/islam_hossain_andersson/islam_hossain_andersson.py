@@ -1,4 +1,5 @@
 import os
+from enum import Enum
 
 import cv2
 import keras
@@ -87,8 +88,12 @@ class IslamHossainAndersson(BaseAlgorithm):
             raise Exception("Invalid processing method")
 
     def classify(self, payload: IslamHossainAnderssonPayload, custom_model_dir=None,
-                 processing_method: PROCESSING_METHOD = PROCESSING_METHOD.DEFAULT) -> (
-            GESTURE, int):
+                 processing_method: PROCESSING_METHOD = PROCESSING_METHOD.DEFAULT, custom_options: dict = None) -> (Enum, int):
+        default_options = {
+            "gesture_enum": GESTURE
+        }
+        options = set_options(default_options, custom_options)
+        gesture_enum = options['gesture_enum']
 
         model_filename = "islam_hossain_andersson.keras"
         model_path = os.path.join(custom_model_dir, model_filename) if custom_model_dir is not None else os.path.join(
@@ -106,14 +111,15 @@ class IslamHossainAndersson(BaseAlgorithm):
             predicted_class = np.argmax(prediction) + 1
             certainty = int(np.max(prediction) * 100)
 
-        return GESTURE(predicted_class), certainty
+        return gesture_enum(predicted_class), certainty
 
     def learn(self, learning_data: list[IslamHossainAnderssonLearningData], target_model_path: str, custom_options: dict = None) -> (float, float):
         default_options = {
             "batch_size": 32,    
             "epochs": 60,
             "learning_rate": 0.001,
-            "enable_augmentation": False
+            "enable_augmentation": False,
+            "num_classes": NUM_CLASSES
         }
         options = set_options(default_options, custom_options)
         processed_images = []
@@ -130,7 +136,7 @@ class IslamHossainAndersson(BaseAlgorithm):
         processed_images = np.array(processed_images)
         labels = np.array(labels)
 
-        model = create_model(NUM_CLASSES,
+        model = create_model(options["num_classes"],
                               learning_rate=options["learning_rate"],
                               enable_augmentation=options["enable_augmentation"])
 

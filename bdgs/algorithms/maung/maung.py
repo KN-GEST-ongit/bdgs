@@ -1,5 +1,6 @@
 import os
 import pickle
+from enum import Enum
 
 import cv2
 import numpy as np
@@ -48,8 +49,13 @@ class Maung(BaseAlgorithm):
         # return hist.astype(np.float32)
 
     def classify(self, payload: MaungPayload, custom_model_dir=None,
-                 processing_method: PROCESSING_METHOD = PROCESSING_METHOD.DEFAULT) -> (GESTURE, int):
-
+                 processing_method: PROCESSING_METHOD = PROCESSING_METHOD.DEFAULT,
+                 custom_options: dict = None) -> (Enum, int):
+        default_options = {
+            "gesture_enum": GESTURE
+        }
+        options = set_options(default_options, custom_options)
+        gesture_enum = options['gesture_enum']
         model_filename = "maung.pkl"
         model_path = os.path.join(custom_model_dir, model_filename) if custom_model_dir is not None else os.path.join(
             ROOT_DIR, "trained_models",
@@ -60,7 +66,7 @@ class Maung(BaseAlgorithm):
         processed_image = (self.process_image(payload=payload, processing_method=processing_method)).flatten()
         processed_image = np.expand_dims(processed_image, axis=0)  #
         predictions = model.predict(processed_image)
-        return GESTURE(predictions[0] + 1), None
+        return gesture_enum(predictions[0] + 1), None
 
     def learn(self, learning_data: list[MaungLearningData], target_model_path: str, custom_options: dict = None) -> (float, float):
         default_options = {

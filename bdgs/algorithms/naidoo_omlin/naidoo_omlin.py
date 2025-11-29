@@ -1,5 +1,6 @@
 import os
 import pickle
+from enum import Enum
 
 import cv2
 import numpy as np
@@ -14,6 +15,7 @@ from bdgs.data.processing_method import PROCESSING_METHOD
 from bdgs.models.image_payload import ImagePayload
 from bdgs.models.learning_data import LearningData
 from definitions import ROOT_DIR
+from bdgs.common import set_options
 
 def extract_features(image: ndarray) -> np.array:
     hsv = cv2.cvtColor(image, cv2.COLOR_BGR2HSV)
@@ -41,13 +43,19 @@ class NaidooOmlin(BaseAlgorithm):
     def process_image(self, payload: ImagePayload,
                       processing_method: PROCESSING_METHOD = PROCESSING_METHOD.DEFAULT) -> ndarray:
         # Algorithm does not process image, only extracts feature which are hard to present visually.
-        # For the purpose of avoiding errors the method returns the original image. 
+        # For the purpose of avoiding errors this method returns the original image. 
 
         return payload.image
 
     def classify(self, payload: ImagePayload, custom_model_dir=None,
-                 processing_method: PROCESSING_METHOD = PROCESSING_METHOD.DEFAULT) -> (GESTURE, int):
-        
+                 processing_method: PROCESSING_METHOD = PROCESSING_METHOD.DEFAULT,
+                 custom_options: dict = None) -> (Enum, int):
+        default_options = {
+            "gesture_enum": GESTURE
+        }
+        options = set_options(default_options, custom_options)
+        gesture_enum = options['gesture_enum']
+
         model_filename = "naidoo_omlin.pkl"
         model_path = os.path.join(custom_model_dir, model_filename) if custom_model_dir is not None else os.path.join(
             ROOT_DIR, "trained_models",
@@ -66,7 +74,7 @@ class NaidooOmlin(BaseAlgorithm):
         certainty = int(proba[prediction] * 100)
 
     
-        return GESTURE(prediction + 1), certainty
+        return gesture_enum(prediction + 1), certainty
 
     def learn(self, learning_data: list[LearningData], target_model_path: str, custom_options: dict = None) -> (float, float):
         labels = []

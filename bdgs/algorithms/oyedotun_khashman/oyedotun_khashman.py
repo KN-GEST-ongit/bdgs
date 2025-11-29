@@ -1,4 +1,5 @@
 import os
+from enum import Enum
 
 import cv2
 import numpy as np
@@ -153,7 +154,7 @@ def create_model_cnn3(num_classes, learning_rate):
     model.add(Dense(400, activation='log_sigmoid'))
 
     # model.add(Dense(NUM_CLASSES, activation='log_sigmoid'))
-    model.add(Dense(NUM_CLASSES, activation='softmax'))
+    model.add(Dense(num_classes, activation='softmax'))
 
     model.compile(
         optimizer=SGD(learning_rate=learning_rate),
@@ -198,7 +199,7 @@ def sdae_pretrain(x_train, layers, pretrain_epochs=5):
     
     return pretrained
 
-def sdae_fine_tuning(x_train, y_train, x_val, y_val, layers, fine_tune_epochs=200):
+def sdae_fine_tuning(num_classes, x_train, y_train, x_val, y_val, layers, fine_tune_epochs=200):
     pretrained = sdae_pretrain(x_train, layers, pretrain_epochs=10)
 
     model = Sequential()
@@ -211,7 +212,7 @@ def sdae_fine_tuning(x_train, y_train, x_val, y_val, layers, fine_tune_epochs=20
         model.layers[-1].set_weights(weights)
     #model.summary()
     
-    model.add(Dense(NUM_CLASSES, activation=activations.softmax))
+    model.add(Dense(num_classes, activation=activations.softmax))
 
     optimizer = SGD(learning_rate=0.4, momentum=0.5)
     model.compile(loss="categorical_crossentropy", optimizer=optimizer, metrics=['accuracy'])
@@ -240,8 +241,14 @@ class OyedotunKhashman(BaseAlgorithm):
     
 
     def classify(self, payload: OyedotunKhashmanPayload, custom_model_dir = None,
-                 processing_method: PROCESSING_METHOD = PROCESSING_METHOD.DEFAULT) -> GESTURE:
-        
+                 processing_method: PROCESSING_METHOD = PROCESSING_METHOD.DEFAULT,
+                 custom_options: dict = None) -> (Enum, int):
+        default_options = {
+            "gesture_enum": GESTURE
+        }
+        options = set_options(default_options, custom_options)
+        gesture_enum = options['gesture_enum']
+
         model_filename = "oyedotun_khashman.keras"
         model_path = os.path.join(custom_model_dir, model_filename) if custom_model_dir is not None else os.path.join(
             ROOT_DIR, "trained_models",
@@ -260,7 +267,7 @@ class OyedotunKhashman(BaseAlgorithm):
             predicted_class = np.argmax(prediction) + 1
             certainty = int(np.max(prediction) * 100)
 
-        return GESTURE(predicted_class), certainty
+        return gesture_enum(predicted_class), certainty
 
     def learn(self, learning_data: list[LearningData], target_model_path: str, custom_options: dict = None) -> (float, float):
         # these are defualt for CNN2
@@ -268,6 +275,7 @@ class OyedotunKhashman(BaseAlgorithm):
             "batch_size": 5,    
             "epochs": 400,
             "learning_rate": 0.8,
+            "num_classes": NUM_CLASSES
         }
         options = set_options(default_options, custom_options)
         processed_images = []
@@ -289,11 +297,11 @@ class OyedotunKhashman(BaseAlgorithm):
         x_train = np.expand_dims(x_train, axis=-1)
         x_val = np.expand_dims(x_val, axis=-1)
 
-        y_train = to_categorical(y_train, NUM_CLASSES)
-        y_val = to_categorical(y_val, NUM_CLASSES)
+        y_train = to_categorical(y_train, options["num_classes"])
+        y_val = to_categorical(y_val, options["num_classes"])
 
         # For CNNs training:
-        model = create_model_cnn2(NUM_CLASSES, options["learning_rate"])
+        model = create_model_cnn2(options["num_classes"], options["learning_rate"])
         history = model.fit(x_train, y_train,
                             validation_data=(x_val, y_val),
                             batch_size=options["batch_size"],
@@ -315,6 +323,7 @@ class OyedotunKhashman(BaseAlgorithm):
         #y_val = to_categorical(y_val, NUM_CLASSES)
 
         #model = sdae_fine_tuning(
+        #    num_classes=options["num_classes"]
         #    x_train=x_train,
         #    y_train=y_train,
         #    x_val=x_val,

@@ -1,4 +1,5 @@
 import os
+from enum import Enum
 
 import cv2
 import keras
@@ -36,7 +37,13 @@ class EidSchwenker(BaseAlgorithm):
             raise Exception("Invalid processing method")
 
     def classify(self, payload: ImagePayload, custom_model_dir=None,
-                 processing_method: PROCESSING_METHOD = PROCESSING_METHOD.DEFAULT) -> (GESTURE, int):
+                 processing_method: PROCESSING_METHOD = PROCESSING_METHOD.DEFAULT, custom_options: dict = None) -> (Enum, int):
+        default_options = {
+            "gesture_enum": GESTURE
+        }
+        options = set_options(default_options, custom_options)
+        gesture_enum = options['gesture_enum']
+
         predicted_class = 1
         certainty = 0
 
@@ -55,12 +62,13 @@ class EidSchwenker(BaseAlgorithm):
             predicted_class = np.argmax(prediction) + 1
             certainty = int(np.max(prediction) * 100)
 
-        return GESTURE(predicted_class), certainty
+        return gesture_enum(predicted_class), certainty
 
     def learn(self, learning_data: list[LearningData], target_model_path: str, custom_options: dict = None) -> (float, float):
         default_options = {
             "epochs": 100,
-            "batch_size": 8
+            "batch_size": 8,
+            "num_classes": NUM_CLASSES
         }
         options = set_options(default_options, custom_options)
         processed_images = []
@@ -88,7 +96,7 @@ class EidSchwenker(BaseAlgorithm):
             layers.Flatten(),
             layers.Dropout(0.5),
             layers.Dense(64, activation='relu'),
-            layers.Dense(NUM_CLASSES, activation='softmax')
+            layers.Dense(options['num_classes'], activation='softmax')
         ])
 
         model.compile(optimizer='adam', loss='sparse_categorical_crossentropy', metrics=['accuracy'])

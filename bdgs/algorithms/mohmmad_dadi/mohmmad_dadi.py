@@ -1,5 +1,6 @@
 import os
 import pickle
+from enum import Enum
 
 import cv2
 import numpy as np
@@ -34,7 +35,13 @@ class MohmmadDadi(BaseAlgorithm):
         return edges
 
     def classify(self, payload: ImagePayload, custom_model_dir=None,
-                 processing_method: PROCESSING_METHOD = PROCESSING_METHOD.DEFAULT) -> (GESTURE, int):
+                    processing_method: PROCESSING_METHOD = PROCESSING_METHOD.DEFAULT,
+                    custom_options: dict = None) -> (Enum, int):
+        default_options = {
+            "gesture_enum": GESTURE
+        }
+        options = set_options(default_options, custom_options)
+        gesture_enum = options['gesture_enum']
 
         model_filename = "mohmmad_dadi_svm.pkl"
         model_path = os.path.join(custom_model_dir, model_filename) if custom_model_dir is not None else os.path.join(
@@ -60,7 +67,7 @@ class MohmmadDadi(BaseAlgorithm):
             predicted_label = predictions[0]
             certainty = 100
 
-        return GESTURE(predicted_label + 1), certainty
+        return gesture_enum(predicted_label + 1), certainty
 
     def learn(self, learning_data: list[LearningData], target_model_path: str, custom_options: dict = None) -> (float, float):
         default_options = {
