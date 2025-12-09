@@ -1,5 +1,6 @@
 import os
 import pickle
+from enum import Enum
 
 import cv2
 import numpy as np
@@ -10,6 +11,7 @@ from bdgs.algorithms.bdgs_algorithm import BaseAlgorithm
 from bdgs.algorithms.maung.maung_learning_data import MaungLearningData
 from bdgs.algorithms.maung.maung_payload import MaungPayload
 from bdgs.common.crop_image import crop_image
+from bdgs.common.set_options import set_options
 from bdgs.data.gesture import GESTURE
 from bdgs.data.processing_method import PROCESSING_METHOD
 from definitions import ROOT_DIR
@@ -48,11 +50,16 @@ class Maung(BaseAlgorithm):
         # return hist.astype(np.float32)
 
     def classify(self, payload: MaungPayload, custom_model_dir=None,
-                 processing_method: PROCESSING_METHOD = PROCESSING_METHOD.DEFAULT) -> (GESTURE, int):
-
+                 processing_method: PROCESSING_METHOD = PROCESSING_METHOD.DEFAULT,
+                 custom_options: dict = None) -> (Enum, int):
+        default_options = {
+            "gesture_enum": GESTURE
+        }
+        options = set_options(default_options, custom_options)
+        gesture_enum = options['gesture_enum']
         model_filename = "maung.pkl"
         model_path = os.path.join(custom_model_dir, model_filename) if custom_model_dir is not None else os.path.join(
-            ROOT_DIR, "trained_models",
+            ROOT_DIR, "bdgs_trained_models",
             model_filename)
 
         with open(model_path, 'rb') as f:
@@ -60,9 +67,15 @@ class Maung(BaseAlgorithm):
         processed_image = (self.process_image(payload=payload, processing_method=processing_method)).flatten()
         processed_image = np.expand_dims(processed_image, axis=0)  #
         predictions = model.predict(processed_image)
-        return GESTURE(predictions[0] + 1), None
+        return gesture_enum(predictions[0] + 1), None
 
-    def learn(self, learning_data: list[MaungLearningData], target_model_path: str) -> (float, float):
+    def learn(self, learning_data: list[MaungLearningData], target_model_path: str, custom_options: dict = None) -> (
+            float, float):
+        default_options = {
+            "max_iter": 1000,
+            "tol": 1e-3
+        }
+        options = set_options(default_options, custom_options)
         processed_images = []
         etiquettes = []
 
@@ -77,7 +90,7 @@ class Maung(BaseAlgorithm):
         X = np.array(processed_images)
         y = np.array(etiquettes)
         X_train, X_val, y_train, y_val = train_test_split(X, y, test_size=0.2, random_state=42)
-        perceptron = Perceptron(max_iter=1000, tol=1e-3)
+        perceptron = Perceptron(max_iter=options["max_iter"], tol=options["tol"])
         perceptron.fit(X_train, y_train)
         accuracy = perceptron.score(X_val, y_val)
         # print(f"Accuracy on validation set: {accuracy * 100:.2f}%")

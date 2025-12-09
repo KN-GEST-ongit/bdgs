@@ -1,15 +1,17 @@
 import os
+from enum import Enum
 
 import cv2
 import keras
 import numpy as np
-from keras.api import models, layers
+from keras import models, layers
 from sklearn.model_selection import train_test_split
 
 from bdgs.algorithms.bdgs_algorithm import BaseAlgorithm
 from bdgs.algorithms.pinto_borges.pinto_borges_learning_data import PintoBorgesLearningData
 from bdgs.algorithms.pinto_borges.pinto_borges_payload import PintoBorgesPayload
 from bdgs.common.crop_image import crop_image
+from bdgs.common.set_options import set_options
 from bdgs.data.gesture import GESTURE
 from bdgs.data.processing_method import PROCESSING_METHOD
 from definitions import ROOT_DIR, NUM_CLASSES
@@ -68,13 +70,19 @@ class PintoBorges(BaseAlgorithm):
         return masked_image
 
     def classify(self, payload: PintoBorgesPayload, custom_model_dir=None,
-                 processing_method: PROCESSING_METHOD = PROCESSING_METHOD.DEFAULT) -> (GESTURE, int):
+                 processing_method: PROCESSING_METHOD = PROCESSING_METHOD.DEFAULT,
+                 custom_options: dict = None) -> (Enum, int):
+        default_options = {
+            "gesture_enum": GESTURE
+        }
+        options = set_options(default_options, custom_options)
+        gesture_enum = options['gesture_enum']
         predicted_class = 1
         certainty = 0
 
         model_filename = "pinto_borges.keras"
         model_path = os.path.join(custom_model_dir, model_filename) if custom_model_dir is not None else os.path.join(
-            ROOT_DIR, "trained_models",
+            ROOT_DIR, "bdgs_trained_models",
             model_filename)
         model = keras.models.load_model(model_path)
         processed_image = self.process_image(payload=payload, processing_method=processing_method)
@@ -86,10 +94,16 @@ class PintoBorges(BaseAlgorithm):
             predicted_class = np.argmax(prediction) + 1
             certainty = int(np.max(prediction) * 100)
 
-        return GESTURE(predicted_class), certainty
+        return gesture_enum(predicted_class), certainty
 
-    def learn(self, learning_data: list[PintoBorgesLearningData], target_model_path: str) -> (float, float):
-        epochs = 10
+    def learn(self, learning_data: list[PintoBorgesLearningData], target_model_path: str,
+              custom_options: dict = None) -> (float, float):
+        default_options = {
+            "batch_size": 8,
+            "epochs": 10,
+            "num_classes": NUM_CLASSES
+        }
+        options = set_options(default_options, custom_options)
         processed_images = []
         etiquettes = []
         for data in learning_data:
@@ -116,11 +130,12 @@ class PintoBorges(BaseAlgorithm):
             layers.Flatten(),
             layers.Dense(400, activation='relu'),
             layers.Dense(800, activation='relu'),
-            layers.Dense(NUM_CLASSES, activation='softmax')
+            layers.Dense(options["num_classes"], activation='softmax')
         ])
 
         model.compile(optimizer='adam', loss='sparse_categorical_crossentropy', metrics=['accuracy'])
-        model.fit(X_train, y_train, epochs=epochs, validation_data=(X_val, y_val), verbose=0, batch_size=8)
+        model.fit(X_train, y_train, epochs=options["epochs"], validation_data=(X_val, y_val), verbose=0,
+                  batch_size=options["batch_size"])
 
         keras.models.save_model(model, os.path.join(target_model_path, 'pinto_borges.keras'))
         test_loss, test_acc = model.evaluate(X_val, y_val, verbose=0)

@@ -34,7 +34,6 @@ def show_processed(image, processed):
         image[0:thumbnail.shape[0], 0:thumbnail.shape[1]] = thumbnail
 
 
-
 def show_prediction_text(certainty, image, prediction):
     font = cv2.FONT_HERSHEY_SIMPLEX
     text = f"{str(prediction)} ({certainty}%)"
@@ -101,7 +100,7 @@ def camera_test(algorithm: ALGORITHM, show_prediction_tresh=60):
 
         processed = process_image(algorithm=algorithm, payload=payload)
         prediction, certainty = classify(algorithm=algorithm, payload=payload,
-                                         custom_model_dir=os.path.abspath('../trained_models/sc3'))
+                                         custom_model_dir=os.path.abspath('../bdgs_trained_models'))
 
         if certainty >= show_prediction_tresh:
             show_prediction_text(certainty, image, prediction)
@@ -116,4 +115,4 @@ def camera_test(algorithm: ALGORITHM, show_prediction_tresh=60):
 
 
 if __name__ == "__main__":
-    camera_test(ALGORITHM.MURTHY_JADON)
+    camera_test(ALGORITHM.OYEDOTUN_KHASHMAN)

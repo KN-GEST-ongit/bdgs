@@ -1,5 +1,6 @@
 import os
 import pickle
+from enum import Enum
 
 import cv2
 import numpy as np
@@ -8,6 +9,7 @@ from sklearn.model_selection import train_test_split
 from sklearn.svm import SVC
 
 from bdgs.algorithms.bdgs_algorithm import BaseAlgorithm
+from bdgs.common.set_options import set_options
 from bdgs.data.gesture import GESTURE
 from bdgs.data.processing_method import PROCESSING_METHOD
 from bdgs.models.image_payload import ImagePayload
@@ -34,16 +36,22 @@ class MohmmadDadi(BaseAlgorithm):
         return edges
 
     def classify(self, payload: ImagePayload, custom_model_dir=None,
-                 processing_method: PROCESSING_METHOD = PROCESSING_METHOD.DEFAULT) -> (GESTURE, int):
+                 processing_method: PROCESSING_METHOD = PROCESSING_METHOD.DEFAULT,
+                 custom_options: dict = None) -> (Enum, int):
+        default_options = {
+            "gesture_enum": GESTURE
+        }
+        options = set_options(default_options, custom_options)
+        gesture_enum = options['gesture_enum']
 
         model_filename = "mohmmad_dadi_svm.pkl"
         model_path = os.path.join(custom_model_dir, model_filename) if custom_model_dir is not None else os.path.join(
-            ROOT_DIR, "trained_models",
+            ROOT_DIR, "bdgs_trained_models",
             model_filename)
 
         with open(model_path, 'rb') as f:
             model = pickle.load(f)
-        with open(os.path.join(ROOT_DIR, "trained_models", 'mohmmad_dadi_pca.pkl'), 'rb') as f:
+        with open(os.path.join(ROOT_DIR, "bdgs_trained_models", 'mohmmad_dadi_pca.pkl'), 'rb') as f:
             pca = pickle.load(f)
 
         processed_image = self.process_image(payload=payload, processing_method=processing_method).flatten()
@@ -60,9 +68,15 @@ class MohmmadDadi(BaseAlgorithm):
             predicted_label = predictions[0]
             certainty = 100
 
-        return GESTURE(predicted_label + 1), certainty
+        return gesture_enum(predicted_label + 1), certainty
 
-    def learn(self, learning_data: list[LearningData], target_model_path: str) -> (float, float):
+    def learn(self, learning_data: list[LearningData], target_model_path: str, custom_options: dict = None) -> (float,
+                                                                                                                float):
+        default_options = {
+            "n_components": 50,
+        }
+        options = set_options(default_options, custom_options)
+
         processed_images = []
         etiquettes = []
         for data in learning_data:
@@ -78,7 +92,7 @@ class MohmmadDadi(BaseAlgorithm):
 
         X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
 
-        pca = PCA(n_components=50)  # PCA can be replaced by LDA
+        pca = PCA(n_components=options["n_components"])  # PCA can be replaced by LDA
         X_train_pca = pca.fit_transform(X_train)
         X_test_pca = pca.transform(X_test)
 

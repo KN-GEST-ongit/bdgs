@@ -1,4 +1,5 @@
 import os.path
+from enum import Enum
 
 import cv2
 import keras
@@ -8,6 +9,7 @@ from sklearn.model_selection import train_test_split
 from bdgs.algorithms.bdgs_algorithm import BaseAlgorithm
 from bdgs.algorithms.murthy_jadon.murthy_jadon_learning_data import MurthyJadonLearningData
 from bdgs.algorithms.murthy_jadon.murthy_jadon_payload import MurthyJadonPayload
+from bdgs.common.set_options import set_options
 from bdgs.data.gesture import GESTURE
 from bdgs.data.processing_method import PROCESSING_METHOD
 from definitions import ROOT_DIR, NUM_CLASSES
@@ -68,13 +70,20 @@ class MurthyJadon(BaseAlgorithm):
             raise Exception("Invalid processing method")
 
     def classify(self, payload: MurthyJadonPayload, custom_model_dir=None,
-                 processing_method: PROCESSING_METHOD = PROCESSING_METHOD.DEFAULT) -> (GESTURE, int):
+                 processing_method: PROCESSING_METHOD = PROCESSING_METHOD.DEFAULT,
+                 custom_options: dict = None) -> (Enum, int):
+        default_options = {
+            "gesture_enum": GESTURE
+        }
+        options = set_options(default_options, custom_options)
+        gesture_enum = options['gesture_enum']
+
         predicted_class = 1
         certainty = 0
 
         model_filename = "murthy_jadon.keras"
         model_path = os.path.join(custom_model_dir, model_filename) if custom_model_dir is not None else os.path.join(
-            ROOT_DIR, "trained_models",
+            ROOT_DIR, "bdgs_trained_models",
             model_filename)
 
         model = keras.models.load_model(model_path)
@@ -87,10 +96,15 @@ class MurthyJadon(BaseAlgorithm):
             predicted_class = np.argmax(prediction) + 1
             certainty = int(np.max(prediction) * 100)
 
-        return GESTURE(predicted_class), certainty
+        return gesture_enum(predicted_class), certainty
 
-    def learn(self, learning_data: list[MurthyJadonLearningData], target_model_path: str) -> (float, float):
-        epochs = 80
+    def learn(self, learning_data: list[MurthyJadonLearningData], target_model_path: str,
+              custom_options: dict = None) -> (float, float):
+        default_options = {
+            "epochs": 80,
+            "num_classes": NUM_CLASSES
+        }
+        options = set_options(default_options, custom_options)
         processed_images = []
         etiquettes = []
         for data in learning_data:
@@ -110,14 +124,14 @@ class MurthyJadon(BaseAlgorithm):
         model = keras.Sequential([
             keras.layers.InputLayer(input_shape=(900,)),
             keras.layers.Dense(14, activation='relu'),
-            keras.layers.Dense(NUM_CLASSES, activation='softmax')
+            keras.layers.Dense(options["num_classes"], activation='softmax')
         ])
         model.compile(
             optimizer='adam',
             loss='sparse_categorical_crossentropy',
             metrics=['accuracy']
         )
-        model.fit(X_train, y_train, epochs=epochs, validation_data=(X_val, y_val), verbose=0)
+        model.fit(X_train, y_train, epochs=options["epochs"], validation_data=(X_val, y_val), verbose=0)
         test_loss, test_acc = model.evaluate(X_val, y_val, verbose=0)
         keras.models.save_model(model, os.path.join(target_model_path, 'murthy_jadon.keras'))
 

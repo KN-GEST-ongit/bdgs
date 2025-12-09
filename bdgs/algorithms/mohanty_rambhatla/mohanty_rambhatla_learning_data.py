@@ -1,9 +1,9 @@
-from bdgs.data.gesture import GESTURE
+from enum import Enum
+
 from bdgs.models.learning_data import LearningData
 
 
 class MohantyRambhatlaLearningData(LearningData):
-    def __init__(self, image_path: str, label: GESTURE, coords: list[tuple[int, int]]):
+    def __init__(self, image_path: str, label: Enum, coords: list[tuple[int, int]]):
         super().__init__(image_path, label)
         self.coords = coords
-    

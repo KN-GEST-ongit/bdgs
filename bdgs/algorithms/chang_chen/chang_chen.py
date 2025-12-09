@@ -1,13 +1,16 @@
 import os
+import pickle
+from enum import Enum
+
 import cv2
 import numpy as np
-import pickle
 from sklearn.neighbors import KNeighborsClassifier
 
 from bdgs.algorithms.bdgs_algorithm import BaseAlgorithm
 from bdgs.algorithms.chang_chen.chang_chen_learning_data import ChangChenLearningData
 from bdgs.algorithms.chang_chen.chang_chen_payload import ChangChenPayload
 from bdgs.common.crop_image import crop_image
+from bdgs.common.set_options import set_options
 from bdgs.data.gesture import GESTURE
 from bdgs.data.processing_method import PROCESSING_METHOD
 from definitions import ROOT_DIR
@@ -59,10 +62,17 @@ class ChangChen(BaseAlgorithm):
         return processed
 
     def classify(self, payload: ChangChenPayload, custom_model_dir=None,
-                 processing_method: PROCESSING_METHOD = PROCESSING_METHOD.DEFAULT) -> (GESTURE, int):
+                 processing_method: PROCESSING_METHOD = PROCESSING_METHOD.DEFAULT,
+                 custom_options: dict = None) -> (Enum, int):
+        default_options = {
+            "gesture_enum": GESTURE
+        }
+        options = set_options(default_options, custom_options)
+        gesture_enum = options['gesture_enum']
+
         model_filename = "chang_chen.pkl"
         model_path = os.path.join(custom_model_dir, model_filename) if custom_model_dir is not None else os.path.join(
-            ROOT_DIR, "trained_models", model_filename)
+            ROOT_DIR, "bdgs_trained_models", model_filename)
 
         with open(model_path, "rb") as f:
             model = pickle.load(f)
@@ -75,9 +85,14 @@ class ChangChen(BaseAlgorithm):
         distances, indices = model.kneighbors(features, n_neighbors=1)
         confidence = round(100 * (1 / (1 + distances[0][0])), 0)
 
-        return GESTURE(prediction[0] + 1), confidence
+        return gesture_enum(prediction[0] + 1), confidence
 
-    def learn(self, learning_data: list[ChangChenLearningData], target_model_path: str) -> (float, float):
+    def learn(self, learning_data: list[ChangChenLearningData], target_model_path: str,
+              custom_options: dict = None) -> (float, float):
+        default_options = {
+            "n_neighbors": 1
+        }
+        options = set_options(default_options, custom_options)
         X, y = [], []
 
         for data in learning_data:
@@ -91,7 +106,7 @@ class ChangChen(BaseAlgorithm):
                 y.append(data.label.value - 1)
 
         X, y = np.array(X), np.array(y)
-        model = KNeighborsClassifier(n_neighbors=1)
+        model = KNeighborsClassifier(n_neighbors=options["n_neighbors"])
         model.fit(X, y)
         accuracy = model.score(X, y)
 

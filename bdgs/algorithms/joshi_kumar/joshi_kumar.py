@@ -1,5 +1,6 @@
 import os
 import pickle
+from enum import Enum
 
 import cv2
 import numpy as np
@@ -13,6 +14,7 @@ from sklearn.svm import SVC
 from bdgs.algorithms.bdgs_algorithm import BaseAlgorithm
 from bdgs.algorithms.joshi_kumar.joshi_kumar_payload import JoshiKumarPayload
 from bdgs.common.crop_image import crop_image
+from bdgs.common.set_options import set_options
 from bdgs.data.gesture import GESTURE
 from bdgs.data.processing_method import PROCESSING_METHOD
 from definitions import ROOT_DIR
@@ -87,7 +89,11 @@ class JoshiKumar(BaseAlgorithm):
 
         return normalized
 
-    def learn(self, learning_data: list, target_model_path: str) -> (float, float):
+    def learn(self, learning_data: list, target_model_path: str, custom_options: dict = None) -> (float, float):
+        default_options = {
+            "n_components": 0.95
+        }
+        options = set_options(default_options, custom_options)
         X, y = [], []
 
         for data in learning_data:
@@ -99,7 +105,7 @@ class JoshiKumar(BaseAlgorithm):
             y.append(data.label.value - 1)
 
         X, y = np.array(X), np.array(y)
-        pca = PCA(n_components=0.95, svd_solver='full')
+        pca = PCA(n_components=options["n_components"], svd_solver='full')
 
         svm = SVC(kernel='rbf', probability=True)
         pipeline = make_pipeline(StandardScaler(), pca, svm)
@@ -117,8 +123,15 @@ class JoshiKumar(BaseAlgorithm):
         return accuracy, None
 
     def classify(self, payload: JoshiKumarPayload, custom_model_path=None,
-                 processing_method: PROCESSING_METHOD = PROCESSING_METHOD.DEFAULT) -> (GESTURE, int):
-        model_path = os.path.join(custom_model_path or os.path.join(ROOT_DIR, "trained_models"), "joshi_kumar.pkl")
+                 processing_method: PROCESSING_METHOD = PROCESSING_METHOD.DEFAULT,
+                 custom_options: dict = None) -> (Enum, int):
+        default_options = {
+            "gesture_enum": GESTURE
+        }
+        options = set_options(default_options, custom_options)
+        gesture_enum = options['gesture_enum']
+
+        model_path = os.path.join(custom_model_path or os.path.join(ROOT_DIR, "bdgs_trained_models"), "joshi_kumar.pkl")
 
         with open(model_path, "rb") as f:
             model = pickle.load(f)
@@ -130,4 +143,4 @@ class JoshiKumar(BaseAlgorithm):
         proba = model.predict_proba(features)
         confidence = round(100 * np.max(proba), 0)
 
-        return GESTURE(prediction[0] + 1), confidence
+        return gesture_enum(prediction[0] + 1), confidence

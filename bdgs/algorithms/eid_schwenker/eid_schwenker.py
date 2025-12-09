@@ -1,12 +1,14 @@
 import os
+from enum import Enum
 
 import cv2
 import keras
 import numpy as np
-from keras.api import models, layers
+from keras import models, layers
 from sklearn.model_selection import train_test_split
 
 from bdgs.algorithms.bdgs_algorithm import BaseAlgorithm
+from bdgs.common.set_options import set_options
 from bdgs.data.gesture import GESTURE
 from bdgs.data.processing_method import PROCESSING_METHOD
 from bdgs.models.image_payload import ImagePayload
@@ -36,13 +38,20 @@ class EidSchwenker(BaseAlgorithm):
             raise Exception("Invalid processing method")
 
     def classify(self, payload: ImagePayload, custom_model_dir=None,
-                 processing_method: PROCESSING_METHOD = PROCESSING_METHOD.DEFAULT) -> (GESTURE, int):
+                 processing_method: PROCESSING_METHOD = PROCESSING_METHOD.DEFAULT, custom_options: dict = None) -> (
+            Enum, int):
+        default_options = {
+            "gesture_enum": GESTURE
+        }
+        options = set_options(default_options, custom_options)
+        gesture_enum = options['gesture_enum']
+
         predicted_class = 1
         certainty = 0
 
         model_filename = "eid_schwenker.keras"
         model_path = os.path.join(custom_model_dir, model_filename) if custom_model_dir is not None else os.path.join(
-            ROOT_DIR, "trained_models",
+            ROOT_DIR, "bdgs_trained_models",
             model_filename)
 
         model = keras.models.load_model(model_path)
@@ -55,10 +64,16 @@ class EidSchwenker(BaseAlgorithm):
             predicted_class = np.argmax(prediction) + 1
             certainty = int(np.max(prediction) * 100)
 
-        return GESTURE(predicted_class), certainty
+        return gesture_enum(predicted_class), certainty
 
-    def learn(self, learning_data: list[LearningData], target_model_path: str) -> (float, float):
-        epochs = 100
+    def learn(self, learning_data: list[LearningData], target_model_path: str, custom_options: dict = None) -> (float,
+                                                                                                                float):
+        default_options = {
+            "epochs": 100,
+            "batch_size": 8,
+            "num_classes": NUM_CLASSES
+        }
+        options = set_options(default_options, custom_options)
         processed_images = []
         etiquettes = []
 
@@ -84,11 +99,12 @@ class EidSchwenker(BaseAlgorithm):
             layers.Flatten(),
             layers.Dropout(0.5),
             layers.Dense(64, activation='relu'),
-            layers.Dense(NUM_CLASSES, activation='softmax')
+            layers.Dense(options['num_classes'], activation='softmax')
         ])
 
         model.compile(optimizer='adam', loss='sparse_categorical_crossentropy', metrics=['accuracy'])
-        model.fit(X_train, y_train, epochs=epochs, validation_data=(X_val, y_val), verbose=0, batch_size=8)
+        model.fit(X_train, y_train, epochs=options["epochs"], validation_data=(X_val, y_val), verbose=0,
+                  batch_size=options["batch_size"])
         keras.models.save_model(model, os.path.join(target_model_path, 'eid_schwenker.keras'))
         test_loss, test_acc = model.evaluate(X_val, y_val, verbose=0)
 
