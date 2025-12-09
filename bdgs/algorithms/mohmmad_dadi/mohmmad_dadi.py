@@ -9,12 +9,13 @@ from sklearn.model_selection import train_test_split
 from sklearn.svm import SVC
 
 from bdgs.algorithms.bdgs_algorithm import BaseAlgorithm
+from bdgs.common.set_options import set_options
 from bdgs.data.gesture import GESTURE
 from bdgs.data.processing_method import PROCESSING_METHOD
 from bdgs.models.image_payload import ImagePayload
 from bdgs.models.learning_data import LearningData
 from definitions import ROOT_DIR
-from bdgs.common.set_options import set_options
+
 
 class MohmmadDadi(BaseAlgorithm):
     def process_image(self, payload: ImagePayload,
@@ -35,8 +36,8 @@ class MohmmadDadi(BaseAlgorithm):
         return edges
 
     def classify(self, payload: ImagePayload, custom_model_dir=None,
-                    processing_method: PROCESSING_METHOD = PROCESSING_METHOD.DEFAULT,
-                    custom_options: dict = None) -> (Enum, int):
+                 processing_method: PROCESSING_METHOD = PROCESSING_METHOD.DEFAULT,
+                 custom_options: dict = None) -> (Enum, int):
         default_options = {
             "gesture_enum": GESTURE
         }
@@ -69,12 +70,13 @@ class MohmmadDadi(BaseAlgorithm):
 
         return gesture_enum(predicted_label + 1), certainty
 
-    def learn(self, learning_data: list[LearningData], target_model_path: str, custom_options: dict = None) -> (float, float):
+    def learn(self, learning_data: list[LearningData], target_model_path: str, custom_options: dict = None) -> (float,
+                                                                                                                float):
         default_options = {
-            "n_components": 50,    
+            "n_components": 50,
         }
         options = set_options(default_options, custom_options)
-        
+
         processed_images = []
         etiquettes = []
         for data in learning_data:

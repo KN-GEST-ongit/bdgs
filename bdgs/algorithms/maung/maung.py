@@ -11,10 +11,11 @@ from bdgs.algorithms.bdgs_algorithm import BaseAlgorithm
 from bdgs.algorithms.maung.maung_learning_data import MaungLearningData
 from bdgs.algorithms.maung.maung_payload import MaungPayload
 from bdgs.common.crop_image import crop_image
+from bdgs.common.set_options import set_options
 from bdgs.data.gesture import GESTURE
 from bdgs.data.processing_method import PROCESSING_METHOD
 from definitions import ROOT_DIR
-from bdgs.common.set_options import set_options
+
 
 class Maung(BaseAlgorithm):
     def process_image(self, payload: MaungPayload,
@@ -68,7 +69,8 @@ class Maung(BaseAlgorithm):
         predictions = model.predict(processed_image)
         return gesture_enum(predictions[0] + 1), None
 
-    def learn(self, learning_data: list[MaungLearningData], target_model_path: str, custom_options: dict = None) -> (float, float):
+    def learn(self, learning_data: list[MaungLearningData], target_model_path: str, custom_options: dict = None) -> (
+            float, float):
         default_options = {
             "max_iter": 1000,
             "tol": 1e-3

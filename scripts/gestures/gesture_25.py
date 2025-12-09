@@ -27,4 +27,3 @@ class Gesture25(Enum):
     G23 = 23
     G24 = 24
     G25 = 25
-    

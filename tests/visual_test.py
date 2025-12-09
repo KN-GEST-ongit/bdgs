@@ -11,9 +11,11 @@ from scripts.choose_payload import choose_payload
 from scripts.file_coords_parser import parse_file_coords, parse_etiquette
 from scripts.loaders import BDGSDatasetLoader
 
+
 def image_processing_visual_test(algorithm: ALGORITHM, images_amount: int):
-    files = BDGSDatasetLoader.get_learning_files(shuffle=True, limit=images_amount, limit_images_in_single_person_single_recording=1,
-                               base_path=os.path.abspath("../../bdgs_photos"))
+    files = BDGSDatasetLoader.get_learning_files(shuffle=True, limit=images_amount,
+                                                 limit_images_in_single_person_single_recording=1,
+                                                 base_path=os.path.abspath("../../bdgs_photos"))
     for image_file in files:
         image = cv2.imread(image_file[0])
         background = cv2.imread(image_file[2])
@@ -35,7 +37,7 @@ def image_processing_visual_test(algorithm: ALGORITHM, images_amount: int):
 
 def classification_visual_test(algorithm: ALGORITHM, images_amount: int):
     files = BDGSDatasetLoader.get_learning_files(shuffle=True, limit=images_amount,
-                               base_path=os.path.abspath("../../bdgs_photos"))
+                                                 base_path=os.path.abspath("../../bdgs_photos"))
     for image_file in files:
         image = cv2.imread(image_file[0])
         background = cv2.imread(image_file[2])

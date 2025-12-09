@@ -15,10 +15,11 @@ from bdgs.algorithms.islam_hossain_andersson.islam_hossain_andersson_learning_da
     IslamHossainAnderssonLearningData
 from bdgs.algorithms.islam_hossain_andersson.islam_hossain_andersson_payload import IslamHossainAnderssonPayload
 from bdgs.common.crop_image import crop_image
+from bdgs.common.set_options import set_options
 from bdgs.data.gesture import GESTURE
 from bdgs.data.processing_method import PROCESSING_METHOD
 from definitions import ROOT_DIR, NUM_CLASSES
-from bdgs.common.set_options import set_options
+
 
 def create_model(num_classes, learning_rate, enable_augmentation=True):
     model = Sequential()
@@ -88,7 +89,8 @@ class IslamHossainAndersson(BaseAlgorithm):
             raise Exception("Invalid processing method")
 
     def classify(self, payload: IslamHossainAnderssonPayload, custom_model_dir=None,
-                 processing_method: PROCESSING_METHOD = PROCESSING_METHOD.DEFAULT, custom_options: dict = None) -> (Enum, int):
+                 processing_method: PROCESSING_METHOD = PROCESSING_METHOD.DEFAULT, custom_options: dict = None) -> (
+            Enum, int):
         default_options = {
             "gesture_enum": GESTURE
         }
@@ -113,9 +115,10 @@ class IslamHossainAndersson(BaseAlgorithm):
 
         return gesture_enum(predicted_class), certainty
 
-    def learn(self, learning_data: list[IslamHossainAnderssonLearningData], target_model_path: str, custom_options: dict = None) -> (float, float):
+    def learn(self, learning_data: list[IslamHossainAnderssonLearningData], target_model_path: str,
+              custom_options: dict = None) -> (float, float):
         default_options = {
-            "batch_size": 32,    
+            "batch_size": 32,
             "epochs": 60,
             "learning_rate": 0.001,
             "enable_augmentation": False,
@@ -137,8 +140,8 @@ class IslamHossainAndersson(BaseAlgorithm):
         labels = np.array(labels)
 
         model = create_model(options["num_classes"],
-                              learning_rate=options["learning_rate"],
-                              enable_augmentation=options["enable_augmentation"])
+                             learning_rate=options["learning_rate"],
+                             enable_augmentation=options["enable_augmentation"])
 
         x_train, x_val, y_train, y_val = train_test_split(processed_images, labels, test_size=0.2,
                                                           random_state=42)

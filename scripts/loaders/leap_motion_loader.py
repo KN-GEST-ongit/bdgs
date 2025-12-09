@@ -1,12 +1,13 @@
 import os
 import random
-from pathlib import Path
 from enum import Enum
+from pathlib import Path
 
 import cv2
 
 from scripts.loaders.base_loader import BaseDatasetLoader
 from scripts.vars import LEAP_MOTION_IMAGES_PATH
+
 
 class LeapMotionEnum(Enum):
     PALM = 1
@@ -20,8 +21,9 @@ class LeapMotionEnum(Enum):
     C = 9
     DOWN = 10
 
+
 class LeapMotionDatasetLoader(BaseDatasetLoader):
-    def get_learning_files(base_path = LEAP_MOTION_IMAGES_PATH , limit = None, shuffle = True):
+    def get_learning_files(base_path=LEAP_MOTION_IMAGES_PATH, limit=None, shuffle=True):
         image_files = []
         for root, _, files in os.walk(base_path):
             root = Path(root).resolve()
@@ -44,4 +46,3 @@ class LeapMotionDatasetLoader(BaseDatasetLoader):
 
         if shuffle: random.shuffle(image_files)
         return image_files[:limit]
-                   

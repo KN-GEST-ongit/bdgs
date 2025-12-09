@@ -11,7 +11,7 @@ from scripts.vars import ALBARCZA_IMAGES_PATH
 # Dataset contains gestues with labels 0-9 and a-z
 # 0-9 get 0-9 lables mapped, a-z get: a - 10; b - 11 and so.
 class AlbarczaDatasetLoader(BaseDatasetLoader):
-    def get_learning_files(base_path = ALBARCZA_IMAGES_PATH, limit = None, shuffle = True):
+    def get_learning_files(base_path=ALBARCZA_IMAGES_PATH, limit=None, shuffle=True):
         image_files = []
         for root, _, files in os.walk(base_path):
             root = Path(root).resolve()
@@ -33,4 +33,3 @@ class AlbarczaDatasetLoader(BaseDatasetLoader):
         if shuffle: random.shuffle(image_files)
 
         return image_files[:limit]
-                   

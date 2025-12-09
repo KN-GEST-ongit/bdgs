@@ -1,6 +1,5 @@
 from enum import Enum
 
-from bdgs.data.gesture import GESTURE
 from bdgs.models.learning_data import LearningData
 
 

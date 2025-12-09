@@ -12,10 +12,11 @@ from sklearn.preprocessing import StandardScaler
 from bdgs.algorithms.bdgs_algorithm import BaseAlgorithm
 from bdgs.algorithms.nguyen_huynh.nguyen_huynh_payload import NguyenHuynhPayload
 from bdgs.common.crop_image import crop_image
+from bdgs.common.set_options import set_options
 from bdgs.data.gesture import GESTURE
 from bdgs.data.processing_method import PROCESSING_METHOD
 from definitions import ROOT_DIR
-from bdgs.common.set_options import set_options
+
 
 class NguyenHuynh(BaseAlgorithm):
 
@@ -190,7 +191,7 @@ class NguyenHuynh(BaseAlgorithm):
             "max_iter": 500
         }
         options = set_options(default_options, custom_options)
-        
+
         X, y = [], []
 
         for data in learning_data:

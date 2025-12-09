@@ -4,18 +4,19 @@ from enum import Enum
 
 import cv2
 import numpy as np
+from numpy import ndarray
 from sklearn import svm
 from sklearn.metrics import accuracy_score
 from sklearn.model_selection import train_test_split
-from numpy import ndarray
 
 from bdgs.algorithms.bdgs_algorithm import BaseAlgorithm
+from bdgs.common import set_options
 from bdgs.data.gesture import GESTURE
 from bdgs.data.processing_method import PROCESSING_METHOD
 from bdgs.models.image_payload import ImagePayload
 from bdgs.models.learning_data import LearningData
 from definitions import ROOT_DIR
-from bdgs.common import set_options
+
 
 def extract_features(image: ndarray) -> np.array:
     hsv = cv2.cvtColor(image, cv2.COLOR_BGR2HSV)
@@ -29,15 +30,15 @@ def extract_features(image: ndarray) -> np.array:
     features = []
     for i in range(n):
         for j in range(m):
-            block = hsv[i*block_h:(i+1)*block_h, j*block_w:(j+1)*block_w]            
+            block = hsv[i * block_h:(i + 1) * block_h, j * block_w:(j + 1) * block_w]
             hist = cv2.calcHist([block], [0, 1, 2], None, [8, 8, 8],
-                                 [0, 180, 0, 256, 0, 256])
+                                [0, 180, 0, 256, 0, 256])
 
             hist = cv2.normalize(hist, hist).flatten()
             features.extend(hist)
 
     return np.array(features)
-    
+
 
 class NaidooOmlin(BaseAlgorithm):
     def process_image(self, payload: ImagePayload,
@@ -73,10 +74,10 @@ class NaidooOmlin(BaseAlgorithm):
         prediction = np.argmax(proba)
         certainty = int(proba[prediction] * 100)
 
-    
         return gesture_enum(prediction + 1), certainty
 
-    def learn(self, learning_data: list[LearningData], target_model_path: str, custom_options: dict = None) -> (float, float):
+    def learn(self, learning_data: list[LearningData], target_model_path: str, custom_options: dict = None) -> (float,
+                                                                                                                float):
         labels = []
         features = []
         for data in learning_data:

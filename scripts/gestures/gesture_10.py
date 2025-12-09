@@ -13,4 +13,3 @@ class Gesture10(Enum):
     G8 = 8
     G9 = 9
     G10 = 10
-    

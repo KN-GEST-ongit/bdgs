@@ -20,8 +20,9 @@ def map_label(label):
         case _:
             return label
 
+
 class JochenTrieschDatasetLoader(BaseDatasetLoader):
-    def get_learning_files(base_path = JOCHEN_TRIESCH_IMAGES_PATH, limit = None, shuffle = True):
+    def get_learning_files(base_path=JOCHEN_TRIESCH_IMAGES_PATH, limit=None, shuffle=True):
         image_files = []
         for root, _, files in os.walk(base_path):
             root = Path(root).resolve()
@@ -42,4 +43,3 @@ class JochenTrieschDatasetLoader(BaseDatasetLoader):
 
         if shuffle: random.shuffle(image_files)
         return image_files[:limit]
-                   

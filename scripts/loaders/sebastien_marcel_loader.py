@@ -1,12 +1,13 @@
 import os
 import random
-from pathlib import Path
 from enum import Enum
+from pathlib import Path
 
 import cv2
 
 from scripts.loaders.base_loader import BaseDatasetLoader
 from scripts.vars import SEBASTEIN_MARCEL_IMAGES_PATH
+
 
 class SebasteinMarcelEnum(Enum):
     A = 1
@@ -16,8 +17,9 @@ class SebasteinMarcelEnum(Enum):
     POINT = 5
     V = 6
 
+
 class SebasteinMarcelDatasetLoader(BaseDatasetLoader):
-    def get_learning_files(base_path = SEBASTEIN_MARCEL_IMAGES_PATH, limit = None, shuffle = True):
+    def get_learning_files(base_path=SEBASTEIN_MARCEL_IMAGES_PATH, limit=None, shuffle=True):
         image_files = []
         for root, _, files in os.walk(base_path):
             root = Path(root).resolve()
@@ -39,4 +41,3 @@ class SebasteinMarcelDatasetLoader(BaseDatasetLoader):
 
         if shuffle: random.shuffle(image_files)
         return image_files[:limit]
-                   

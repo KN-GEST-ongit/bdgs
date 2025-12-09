@@ -1,15 +1,16 @@
 import os
 import random
-from pathlib import Path
 import re
+from pathlib import Path
 
 import cv2
 
 from scripts.loaders.base_loader import BaseDatasetLoader
 from scripts.vars import NUS_IMAGES_PATH
 
+
 class NUSDatasetLoader(BaseDatasetLoader):
-    def get_learning_files(base_path = NUS_IMAGES_PATH, limit = None, shuffle = True):
+    def get_learning_files(base_path=NUS_IMAGES_PATH, limit=None, shuffle=True):
         image_files = []
         for root, _, files in os.walk(base_path):
             for file in files:
@@ -27,4 +28,3 @@ class NUSDatasetLoader(BaseDatasetLoader):
 
         if shuffle: random.shuffle(image_files)
         return image_files[:limit]
-                   

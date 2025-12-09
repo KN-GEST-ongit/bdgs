@@ -34,7 +34,6 @@ def show_processed(image, processed):
         image[0:thumbnail.shape[0], 0:thumbnail.shape[1]] = thumbnail
 
 
-
 def show_prediction_text(certainty, image, prediction):
     font = cv2.FONT_HERSHEY_SIMPLEX
     text = f"{str(prediction)} ({certainty}%)"

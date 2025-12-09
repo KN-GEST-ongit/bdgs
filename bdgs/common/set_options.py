@@ -1,4 +1,3 @@
-
 def set_options(default_options: dict, custom_options: dict) -> dict:
     if custom_options is None:
         return default_options

@@ -2,26 +2,26 @@ import os
 from enum import Enum
 
 import cv2
-import numpy as np
-from numpy import ndarray
 import keras
+import numpy as np
 from keras import Sequential
-from keras.src.layers import Rescaling, Conv2D, MaxPooling2D, Flatten, Dense, GaussianNoise, Dropout, Input
+from keras.src.activations import activations
+from keras.src.layers import Rescaling, Conv2D, MaxPooling2D, Flatten, Dense, Dropout, Input
 from keras.src.losses import MeanSquaredError
 from keras.src.optimizers import SGD
-from sklearn.model_selection import train_test_split
 from keras.src.utils import to_categorical
-from keras.src.activations import activations
+from numpy import ndarray
+from sklearn.model_selection import train_test_split
 
 from bdgs.algorithms.bdgs_algorithm import BaseAlgorithm
-from bdgs.data.gesture import GESTURE
-from bdgs.common.crop_image import crop_image
-from bdgs.data.processing_method import PROCESSING_METHOD
-from bdgs.models.image_payload import ImagePayload
-from bdgs.models.learning_data import LearningData
 from bdgs.algorithms.oyedotun_khashman.oyedotun_khashman_payload import OyedotunKhashmanPayload
-from definitions import NUM_CLASSES, ROOT_DIR
+from bdgs.common.crop_image import crop_image
 from bdgs.common.set_options import set_options
+from bdgs.data.gesture import GESTURE
+from bdgs.data.processing_method import PROCESSING_METHOD
+from bdgs.models.learning_data import LearningData
+from definitions import NUM_CLASSES, ROOT_DIR
+
 
 def extract_hand(image: ndarray):
     binary_image = image.astype(np.uint8)
@@ -32,8 +32,9 @@ def extract_hand(image: ndarray):
 
     x_min, x_max = np.min(xs), np.max(xs)
     y_min, y_max = np.min(ys), np.max(ys)
-    
+
     return image[y_min:y_max + 1, x_min:x_max + 1]
+
 
 def create_model_cnn1(num_classes, learning_rate):
     model = Sequential()
@@ -67,6 +68,7 @@ def create_model_cnn1(num_classes, learning_rate):
         metrics=["accuracy"],
     )
     return model
+
 
 def create_model_cnn2(num_classes, learning_rate):
     model = Sequential()
@@ -110,6 +112,7 @@ def create_model_cnn2(num_classes, learning_rate):
         metrics=["accuracy"],
     )
     return model
+
 
 def create_model_cnn3(num_classes, learning_rate):
     model = Sequential()
@@ -163,41 +166,44 @@ def create_model_cnn3(num_classes, learning_rate):
     )
     return model
 
+
 def create_dae(x_train, input_dims, output_dims, num_epoch):
     model = Sequential()
     model.add(Input(shape=(input_dims,)))
-    model.add(Dropout(0.5)) # noise
-    model.add(Dense(output_dims, activation = activations.sigmoid)) # encoder
-    model.add(Dense(input_dims, activation = activations.sigmoid)) # decoder
-    model.compile(loss = MeanSquaredError(), optimizer=SGD(learning_rate=0.8))
-    model.fit(x_train, x_train, epochs = num_epoch, batch_size = 5)
-    
-    #model.summary()
+    model.add(Dropout(0.5))  # noise
+    model.add(Dense(output_dims, activation=activations.sigmoid))  # encoder
+    model.add(Dense(input_dims, activation=activations.sigmoid))  # decoder
+    model.compile(loss=MeanSquaredError(), optimizer=SGD(learning_rate=0.8))
+    model.fit(x_train, x_train, epochs=num_epoch, batch_size=5)
+
+    # model.summary()
 
     return model
+
 
 def sdae_pretrain(x_train, layers, pretrain_epochs=5):
     pretrained = []
     current_data = x_train
-    
-    for i in range(len(layers) - 1):        
+
+    for i in range(len(layers) - 1):
         dae = create_dae(
-            current_data, 
-            layers[i], 
-            layers[i+1], 
+            current_data,
+            layers[i],
+            layers[i + 1],
             pretrain_epochs
         )
         pretrained.append(dae)
-        
+
         encoder_layer = next(l for l in dae.layers if isinstance(l, Dense))
         encoder_weights = encoder_layer.get_weights()
 
-        encoder_model = Sequential([Input(shape=(layers[i],)), Dense(layers[i+1], activation=activations.sigmoid)])
+        encoder_model = Sequential([Input(shape=(layers[i],)), Dense(layers[i + 1], activation=activations.sigmoid)])
         encoder_model.layers[-1].set_weights(encoder_weights)
 
         current_data = encoder_model.predict(current_data, verbose=0)
-    
+
     return pretrained
+
 
 def sdae_fine_tuning(num_classes, x_train, y_train, x_val, y_val, layers, fine_tune_epochs=200):
     pretrained = sdae_pretrain(x_train, layers, pretrain_epochs=10)
@@ -208,16 +214,17 @@ def sdae_fine_tuning(num_classes, x_train, y_train, x_val, y_val, layers, fine_t
 
     for i, dae in enumerate(pretrained):
         weights = next(l for l in dae.layers if isinstance(l, Dense)).get_weights()
-        model.add(Dense(layers[i+1], activation=activations.sigmoid))
+        model.add(Dense(layers[i + 1], activation=activations.sigmoid))
         model.layers[-1].set_weights(weights)
-    #model.summary()
-    
+    # model.summary()
+
     model.add(Dense(num_classes, activation=activations.softmax))
 
     optimizer = SGD(learning_rate=0.4, momentum=0.5)
     model.compile(loss="categorical_crossentropy", optimizer=optimizer, metrics=['accuracy'])
     history = model.fit(x_train, y_train, epochs=fine_tune_epochs, batch_size=4, validation_data=(x_val, y_val))
     return model
+
 
 class OyedotunKhashman(BaseAlgorithm):
     def process_image(self, payload: OyedotunKhashmanPayload,
@@ -233,14 +240,13 @@ class OyedotunKhashman(BaseAlgorithm):
         median_filtered = cv2.medianBlur(binary_threshed, 13)
         extracted_hand = extract_hand(median_filtered)
         # For CNN1 add SDAEs  rescale to 32x32
-        #resized = cv2.resize(extracted_hand, (32, 32), interpolation=cv2.INTER_AREA)
+        # resized = cv2.resize(extracted_hand, (32, 32), interpolation=cv2.INTER_AREA)
         # For CNN2 and CNN3 rescale to 64x64
         resized = cv2.resize(extracted_hand, (64, 64), interpolation=cv2.INTER_AREA)
-        
-        return resized
-    
 
-    def classify(self, payload: OyedotunKhashmanPayload, custom_model_dir = None,
+        return resized
+
+    def classify(self, payload: OyedotunKhashmanPayload, custom_model_dir=None,
                  processing_method: PROCESSING_METHOD = PROCESSING_METHOD.DEFAULT,
                  custom_options: dict = None) -> (Enum, int):
         default_options = {
@@ -257,8 +263,8 @@ class OyedotunKhashman(BaseAlgorithm):
         model = keras.models.load_model(model_path)
         processed_image = self.process_image(payload=payload)
         expanded_dims = np.expand_dims(processed_image, axis=0)
-        #reshaped_to_vector = expanded_dims.reshape(expanded_dims.shape[0], -1) 
-        #normalized = reshaped_to_vector.astype("float32") / 255.0
+        # reshaped_to_vector = expanded_dims.reshape(expanded_dims.shape[0], -1)
+        # normalized = reshaped_to_vector.astype("float32") / 255.0
         predictions = model.predict(expanded_dims, verbose=0)
 
         predicted_class = 1
@@ -269,10 +275,11 @@ class OyedotunKhashman(BaseAlgorithm):
 
         return gesture_enum(predicted_class), certainty
 
-    def learn(self, learning_data: list[LearningData], target_model_path: str, custom_options: dict = None) -> (float, float):
+    def learn(self, learning_data: list[LearningData], target_model_path: str, custom_options: dict = None) -> (float,
+                                                                                                                float):
         # these are defualt for CNN2
         default_options = {
-            "batch_size": 5,    
+            "batch_size": 5,
             "epochs": 400,
             "learning_rate": 0.8,
             "num_classes": NUM_CLASSES
@@ -293,7 +300,7 @@ class OyedotunKhashman(BaseAlgorithm):
 
         x_train, x_val, y_train, y_val = train_test_split(processed_images, labels, test_size=0.2,
                                                           random_state=42)
-        
+
         x_train = np.expand_dims(x_train, axis=-1)
         x_val = np.expand_dims(x_val, axis=-1)
 
@@ -309,20 +316,20 @@ class OyedotunKhashman(BaseAlgorithm):
                             verbose="auto")
         test_loss, test_acc = model.evaluate(x_val, y_val, verbose=0)
 
-        #FOR SDAES:
+        # FOR SDAES:
 
         # reshape img to vector, for example 32x32 -> 1024 x 1
-        x_train = x_train.reshape(x_train.shape[0], -1) 
+        x_train = x_train.reshape(x_train.shape[0], -1)
         x_val = x_val.reshape(x_val.shape[0], -1)
 
         # normalize
         x_train = x_train.astype("float32") / 255.0
         x_val = x_val.astype("float32") / 255.0
 
-        #y_train = to_categorical(y_train, NUM_CLASSES)
-        #y_val = to_categorical(y_val, NUM_CLASSES)
+        # y_train = to_categorical(y_train, NUM_CLASSES)
+        # y_val = to_categorical(y_val, NUM_CLASSES)
 
-        #model = sdae_fine_tuning(
+        # model = sdae_fine_tuning(
         #    num_classes=options["num_classes"]
         #    x_train=x_train,
         #    y_train=y_train,
@@ -330,13 +337,12 @@ class OyedotunKhashman(BaseAlgorithm):
         #    y_val=y_val,
         #    layers=[32*32, 120, 90, 50, 40],
         #    fine_tune_epochs=300
-        #)
+        # )
 
         keras.models.save_model(
             model=model,
             filepath=os.path.join(target_model_path, "oyedotun_khashman.keras")
         )
-        #test_loss, test_acc = model.evaluate(x_val, y_val, verbose=0)
+        # test_loss, test_acc = model.evaluate(x_val, y_val, verbose=0)
 
         return test_acc, test_loss
-        

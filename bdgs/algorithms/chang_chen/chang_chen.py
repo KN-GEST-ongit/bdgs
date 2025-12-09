@@ -1,19 +1,19 @@
 import os
+import pickle
 from enum import Enum
 
 import cv2
 import numpy as np
-import pickle
 from sklearn.neighbors import KNeighborsClassifier
 
 from bdgs.algorithms.bdgs_algorithm import BaseAlgorithm
 from bdgs.algorithms.chang_chen.chang_chen_learning_data import ChangChenLearningData
 from bdgs.algorithms.chang_chen.chang_chen_payload import ChangChenPayload
 from bdgs.common.crop_image import crop_image
+from bdgs.common.set_options import set_options
 from bdgs.data.gesture import GESTURE
 from bdgs.data.processing_method import PROCESSING_METHOD
 from definitions import ROOT_DIR
-from bdgs.common.set_options import set_options
 
 
 def extract_features(image: np.ndarray) -> np.ndarray:
@@ -87,7 +87,8 @@ class ChangChen(BaseAlgorithm):
 
         return gesture_enum(prediction[0] + 1), confidence
 
-    def learn(self, learning_data: list[ChangChenLearningData], target_model_path: str, custom_options: dict = None) -> (float, float):
+    def learn(self, learning_data: list[ChangChenLearningData], target_model_path: str,
+              custom_options: dict = None) -> (float, float):
         default_options = {
             "n_neighbors": 1
         }

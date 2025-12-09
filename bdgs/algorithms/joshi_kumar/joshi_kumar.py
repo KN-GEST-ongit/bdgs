@@ -14,10 +14,11 @@ from sklearn.svm import SVC
 from bdgs.algorithms.bdgs_algorithm import BaseAlgorithm
 from bdgs.algorithms.joshi_kumar.joshi_kumar_payload import JoshiKumarPayload
 from bdgs.common.crop_image import crop_image
+from bdgs.common.set_options import set_options
 from bdgs.data.gesture import GESTURE
 from bdgs.data.processing_method import PROCESSING_METHOD
 from definitions import ROOT_DIR
-from bdgs.common.set_options import set_options
+
 
 def reorient_image(img: ndarray) -> ndarray:
     moments = cv2.moments(img)

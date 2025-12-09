@@ -15,4 +15,3 @@ class Gesture12(Enum):
     G10 = 10
     G11 = 11
     G12 = 12
-    

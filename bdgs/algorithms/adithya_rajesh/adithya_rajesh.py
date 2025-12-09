@@ -14,10 +14,10 @@ from bdgs.algorithms.adithya_rajesh.adithya_rajesh_learning_data import AdithyaR
 from bdgs.algorithms.adithya_rajesh.adithya_rajesh_payload import AdithyaRajeshPayload
 from bdgs.algorithms.bdgs_algorithm import BaseAlgorithm
 from bdgs.common.crop_image import crop_image
+from bdgs.common.set_options import set_options
 from bdgs.data.gesture import GESTURE
 from bdgs.data.processing_method import PROCESSING_METHOD
 from definitions import ROOT_DIR, NUM_CLASSES
-from bdgs.common.set_options import set_options
 
 
 def create_model(num_classes, learning_rate, momentum):
@@ -83,8 +83,8 @@ class AdithyaRajesh(BaseAlgorithm):
         return image
 
     def classify(self, payload: AdithyaRajeshPayload, custom_model_dir=None,
-                    processing_method: PROCESSING_METHOD = PROCESSING_METHOD.DEFAULT,
-                    custom_options: dict = None) -> (Enum, int):
+                 processing_method: PROCESSING_METHOD = PROCESSING_METHOD.DEFAULT,
+                 custom_options: dict = None) -> (Enum, int):
         default_options = {
             "gesture_enum": GESTURE
         }
@@ -109,9 +109,10 @@ class AdithyaRajesh(BaseAlgorithm):
 
         return gesture_enum(predicted_class), certainty
 
-    def learn(self, learning_data: list[AdithyaRajeshLearningData], target_model_path: str, custom_options: dict = None) -> (float, float):
+    def learn(self, learning_data: list[AdithyaRajeshLearningData], target_model_path: str,
+              custom_options: dict = None) -> (float, float):
         default_options = {
-            "batch_size": 32,    
+            "batch_size": 32,
             "epochs": 20,
             "learning_rate": 0.001,
             "momentum": 0.9,

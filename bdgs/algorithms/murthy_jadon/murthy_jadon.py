@@ -1,5 +1,5 @@
-from enum import Enum
 import os.path
+from enum import Enum
 
 import cv2
 import keras
@@ -9,10 +9,11 @@ from sklearn.model_selection import train_test_split
 from bdgs.algorithms.bdgs_algorithm import BaseAlgorithm
 from bdgs.algorithms.murthy_jadon.murthy_jadon_learning_data import MurthyJadonLearningData
 from bdgs.algorithms.murthy_jadon.murthy_jadon_payload import MurthyJadonPayload
+from bdgs.common.set_options import set_options
 from bdgs.data.gesture import GESTURE
 from bdgs.data.processing_method import PROCESSING_METHOD
 from definitions import ROOT_DIR, NUM_CLASSES
-from bdgs.common.set_options import set_options
+
 
 def subtract_background(background, image):
     bg_subtractor = cv2.createBackgroundSubtractorMOG2(history=2, varThreshold=50, detectShadows=False)
@@ -97,8 +98,9 @@ class MurthyJadon(BaseAlgorithm):
 
         return gesture_enum(predicted_class), certainty
 
-    def learn(self, learning_data: list[MurthyJadonLearningData], target_model_path: str, custom_options: dict = None) -> (float, float):
-        default_options = {  
+    def learn(self, learning_data: list[MurthyJadonLearningData], target_model_path: str,
+              custom_options: dict = None) -> (float, float):
+        default_options = {
             "epochs": 80,
             "num_classes": NUM_CLASSES
         }

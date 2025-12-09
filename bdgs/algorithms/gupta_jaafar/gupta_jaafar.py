@@ -14,10 +14,10 @@ from bdgs.algorithms.bdgs_algorithm import BaseAlgorithm
 from bdgs.algorithms.gupta_jaafar.gupta_jaafar_learning_data import GuptaJaafarLearningData
 from bdgs.algorithms.gupta_jaafar.gupta_jaafar_payload import GuptaJaafarPayload
 from bdgs.common.crop_image import crop_image
+from bdgs.common.set_options import set_options
 from bdgs.data.gesture import GESTURE
 from bdgs.data.processing_method import PROCESSING_METHOD
 from definitions import ROOT_DIR
-from bdgs.common.set_options import set_options
 
 
 class GuptaJaafar(BaseAlgorithm):
@@ -53,7 +53,8 @@ class GuptaJaafar(BaseAlgorithm):
         return preview_image
 
     def classify(self, payload: GuptaJaafarPayload, custom_model_dir=None,
-                 processing_method: PROCESSING_METHOD = PROCESSING_METHOD.DEFAULT, custom_options: dict = None) -> (Enum, int):
+                 processing_method: PROCESSING_METHOD = PROCESSING_METHOD.DEFAULT, custom_options: dict = None) -> (
+            Enum, int):
         default_options = {
             "gesture_enum": GESTURE
         }
@@ -88,13 +89,14 @@ class GuptaJaafar(BaseAlgorithm):
 
         return gesture_enum(predicted_label + 1), certainty
 
-    def learn(self, learning_data: list[GuptaJaafarLearningData], target_model_path: str, custom_options: dict = None) -> (float, float):
+    def learn(self, learning_data: list[GuptaJaafarLearningData], target_model_path: str,
+              custom_options: dict = None) -> (float, float):
         default_options = {
             "pca_n_components": 50,
             "lda_n_components": 5
         }
         options = set_options(default_options, custom_options)
-        
+
         processed_features = []
         etiquettes = []
         for data in learning_data:

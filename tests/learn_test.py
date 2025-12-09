@@ -7,8 +7,10 @@ from scripts.loaders import BDGSDatasetLoader
 
 
 def learn_test(algorithm: ALGORITHM, images_amount: int, people_amount: int):
-    files = BDGSDatasetLoader.get_learning_files(shuffle=True, limit=images_amount, limit_images_in_single_person_single_recording=1,
-                               limit_people=people_amount, base_path=os.path.abspath("../bdgs_photos"))
+    files = BDGSDatasetLoader.get_learning_files(shuffle=True, limit=images_amount,
+                                                 limit_images_in_single_person_single_recording=1,
+                                                 limit_people=people_amount,
+                                                 base_path=os.path.abspath("../bdgs_photos"))
 
     custom_options = {"epochs": 20}
 

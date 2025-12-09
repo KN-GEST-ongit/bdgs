@@ -7,6 +7,7 @@ import cv2
 from scripts.loaders.base_loader import BaseDatasetLoader
 from scripts.vars import THOMAS_MOESLUND_IMAGES_PATH
 
+
 # Dataset needs to be preprocessed before loading:
 # The original database is a gzip archive and since get_learning_files should return 
 # path for each file the database needs to be uncompressed before loading.
@@ -14,7 +15,7 @@ from scripts.vars import THOMAS_MOESLUND_IMAGES_PATH
 
 
 class ThomasMoeslundDatasetLoader(BaseDatasetLoader):
-    def get_learning_files(base_path = THOMAS_MOESLUND_IMAGES_PATH, limit = None, shuffle = True):
+    def get_learning_files(base_path=THOMAS_MOESLUND_IMAGES_PATH, limit=None, shuffle=True):
         image_files = []
         for root, _, files in os.walk(base_path):
             root = Path(root).resolve()
@@ -25,7 +26,7 @@ class ThomasMoeslundDatasetLoader(BaseDatasetLoader):
                     img_path = os.path.join(root, file)
                     img = cv2.imread(img_path)
                     if img is None:
-                        continue 
+                        continue
                     img_h, img_w = img.shape[:2]
                     image_files.append(
                         (img_path, f"{label_int} (0 0) ({img_w} {img_h}) ({img_w} {img_h})", None)
@@ -33,4 +34,3 @@ class ThomasMoeslundDatasetLoader(BaseDatasetLoader):
 
         if shuffle: random.shuffle(image_files)
         return image_files[:limit]
-                   
