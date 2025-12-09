@@ -45,12 +45,12 @@ class MohmmadDadi(BaseAlgorithm):
 
         model_filename = "mohmmad_dadi_svm.pkl"
         model_path = os.path.join(custom_model_dir, model_filename) if custom_model_dir is not None else os.path.join(
-            ROOT_DIR, "trained_models",
+            ROOT_DIR, "bdgs_trained_models",
             model_filename)
 
         with open(model_path, 'rb') as f:
             model = pickle.load(f)
-        with open(os.path.join(ROOT_DIR, "trained_models", 'mohmmad_dadi_pca.pkl'), 'rb') as f:
+        with open(os.path.join(ROOT_DIR, "bdgs_trained_models", 'mohmmad_dadi_pca.pkl'), 'rb') as f:
             pca = pickle.load(f)
 
         processed_image = self.process_image(payload=payload, processing_method=processing_method).flatten()

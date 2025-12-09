@@ -101,7 +101,7 @@ def camera_test(algorithm: ALGORITHM, show_prediction_tresh=60):
 
         processed = process_image(algorithm=algorithm, payload=payload)
         prediction, certainty = classify(algorithm=algorithm, payload=payload,
-                                         custom_model_dir=os.path.abspath('../trained_models'))
+                                         custom_model_dir=os.path.abspath('../bdgs_trained_models'))
 
         if certainty >= show_prediction_tresh:
             show_prediction_text(certainty, image, prediction)

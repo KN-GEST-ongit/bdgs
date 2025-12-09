@@ -230,7 +230,7 @@ class NguyenHuynh(BaseAlgorithm):
         }
         options = set_options(default_options, custom_options)
         gesture_enum = options['gesture_enum']
-        model_path = os.path.join(custom_model_path or os.path.join(ROOT_DIR, "trained_models"),
+        model_path = os.path.join(custom_model_path or os.path.join(ROOT_DIR, "bdgs_trained_models"),
                                   "nguyen_huynh.pkl")
 
         with open(model_path, "rb") as f:

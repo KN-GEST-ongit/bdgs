@@ -40,7 +40,7 @@ class ZhuangYang(BaseAlgorithm):
         gesture_enum = options['gesture_enum']
         model_filename = "zhuang_yang.pkl"
         model_path = os.path.join(custom_model_path, model_filename) if custom_model_path is not None else os.path.join(
-            ROOT_DIR, "trained_models",
+            ROOT_DIR, "bdgs_trained_models",
             model_filename)
         with open(model_path, "rb") as f:
             model = pickle.load(f)

@@ -43,7 +43,7 @@ def classification_visual_test(algorithm: ALGORITHM, images_amount: int):
         payload = choose_payload(algorithm, background, coords, image)
 
         result, certainty = classify(algorithm=algorithm, payload=payload,
-                                     custom_model_dir=os.path.abspath('../trained_models'))
+                                     custom_model_dir=os.path.abspath('../bdgs_trained_models'))
 
         cv2.imshow(f"Gesture: {result} ({certainty}%, should be: {GESTURE(parse_etiquette(image_file[1]))})", image)
         cv2.waitKey(0)

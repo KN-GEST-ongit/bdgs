@@ -9,6 +9,7 @@ from bdgs.data.processing_method import PROCESSING_METHOD
 from bdgs.models.image_payload import ImagePayload
 from bdgs.models.learning_data import LearningData
 
+
 def process_image(algorithm: ALGORITHM, payload: ImagePayload,
                   processing_method: PROCESSING_METHOD = PROCESSING_METHOD.DEFAULT) -> ndarray:
     """
@@ -29,7 +30,7 @@ def process_image(algorithm: ALGORITHM, payload: ImagePayload,
 
 def classify(algorithm: ALGORITHM, payload: ImagePayload, custom_model_dir=None,
              processing_method: PROCESSING_METHOD = PROCESSING_METHOD.DEFAULT,
-             custom_options:dict = None) -> (Enum, int):
+             custom_options: dict = None) -> (Enum, int):
     """
     Classifies an image using the specified gesture recognition algorithm.
 
@@ -43,12 +44,12 @@ def classify(algorithm: ALGORITHM, payload: ImagePayload, custom_model_dir=None,
             
     """
     classifier = ALGORITHM_FUNCTIONS[algorithm]
-    prediction, certainty = classifier.classify(payload, custom_model_dir, processing_method)
+    prediction, certainty = classifier.classify(payload, custom_model_dir, processing_method, custom_options)
 
     return prediction, certainty
 
 
-def learn(algorithm: ALGORITHM, learning_data: list[LearningData], target_model_path: str, custom_options:dict = None):
+def learn(algorithm: ALGORITHM, learning_data: list[LearningData], target_model_path: str, custom_options: dict = None):
     """
     Starts the algorithm training process.
 

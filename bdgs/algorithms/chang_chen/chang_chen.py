@@ -72,7 +72,7 @@ class ChangChen(BaseAlgorithm):
 
         model_filename = "chang_chen.pkl"
         model_path = os.path.join(custom_model_dir, model_filename) if custom_model_dir is not None else os.path.join(
-            ROOT_DIR, "trained_models", model_filename)
+            ROOT_DIR, "bdgs_trained_models", model_filename)
 
         with open(model_path, "rb") as f:
             model = pickle.load(f)

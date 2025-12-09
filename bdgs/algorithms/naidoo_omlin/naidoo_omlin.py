@@ -58,7 +58,7 @@ class NaidooOmlin(BaseAlgorithm):
 
         model_filename = "naidoo_omlin.pkl"
         model_path = os.path.join(custom_model_dir, model_filename) if custom_model_dir is not None else os.path.join(
-            ROOT_DIR, "trained_models",
+            ROOT_DIR, "bdgs_trained_models",
             model_filename)
 
         try:
