@@ -6,7 +6,7 @@ README = (HERE / "README.md").read_text(encoding="utf-8")
 
 setup(
     name="bdgs",
-    version="2.0.1",
+    version="2.1.0",
     packages=find_packages(),
     install_requires=[
         'opencv-python~=4.11.0.86',
